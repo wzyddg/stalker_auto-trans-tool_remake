@@ -79,8 +79,8 @@ def main(argv):
     doneFileLst = os.listdir(doneDir)
 
     # reuse translated texts
+    reuseTexts = {}
     if reuseDir is not None:
-        reuseTexts = {}
         reLst = os.listdir(reuseDir)
         print("")
         for reFile in reLst:
