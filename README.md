@@ -2,6 +2,8 @@
 
 I'm that lazy to just put -h info here ;)
 
+require python 3.9 and poetry, you can pack it into .exe with pyinstaller like me.
+
 ————————————————————————————————————————————
 
 S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.
