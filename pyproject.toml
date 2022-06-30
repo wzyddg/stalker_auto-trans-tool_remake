@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "stalker_auto-trans-tool_remake"
+version = "2.0.1"
+description = ""
+authors = ["wzyddg"]
+license = "Apache"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+lxml = "^4.8.0"
+lxml-stubs = "^0.4.0"
+requests5 = "1.0.0"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.9.5"
+flake8 = "^4.0.1"
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
