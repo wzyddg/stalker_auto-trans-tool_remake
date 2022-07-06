@@ -62,6 +62,8 @@ def main(argv):
     def getTranslator(e) -> webTranslator.WebTranslator:
         if e == 'qq':
             return webTranslator.TransmartQQTranslator(analyzeCharCount)
+        elif e == 'deepl':
+            return webTranslator.DeepLTranslator()
         elif e == 'baidu':
             return webTranslator.BaiduTranslator(appId, appKey)
 

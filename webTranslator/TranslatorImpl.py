@@ -2,11 +2,13 @@ from hashlib import md5
 import re
 from time import sleep
 import timeit
+from typing import Tuple
 from .entityDefinition import *
 import urllib
 import requests
 import json
 import base64
+import random
 
 
 class TransmartQQTranslator(WebTranslator):
@@ -21,6 +23,7 @@ class TransmartQQTranslator(WebTranslator):
         print("\nTransmartQQTranslator only support chs/eng as output!")
         self.clientKey = ""
         self.needAnalyzeCharCount = needAnalyzeCharCount
+        self.analyzeApi = "https://transmart.qq.com/api/imt"
         self.mainTransApi = "https://transmart.qq.com/api/imt"
         self.eachRequestGap = 0
 
@@ -34,7 +37,7 @@ class TransmartQQTranslator(WebTranslator):
     def analyzeTextByEngine(self, text: str) -> list[str]:
         anabody = {"header": {"fn": "text_analysis", "client_key": self.clientKey},
                    "type": "plain", "text": text}
-        anaresponse = requests.post(self.mainTransApi, json=anabody)
+        anaresponse = requests.post(self.analyzeApi, json=anabody)
         anaresJson = json.loads(anaresponse.text)
         texts = []
         for senten in anaresJson['sentence_list']:
@@ -146,3 +149,50 @@ class BaiduTranslator(WebTranslator):
         chunk = self.appid+query+BaiduTranslator.fixedSalt+self.appkey
         sign = md5(chunk.encode("utf-8"))
         return sign.hexdigest()
+
+
+class DeepLTranslator(WebTranslator):
+    __langCodeMap = {
+        "chs": "ZH",
+        "eng": "EN",
+        "rus": "RU"
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.analyzeApi = "https://www2.deepl.com/jsonrpc?method=LMT_split_text"
+        self.mainTransApi = "https://www2.deepl.com/jsonrpc?method=LMT_handle_jobs"
+        self.eachRequestGap = 0.5
+
+    def getApiLangCode(self, textLang: str) -> str:
+        return DeepLTranslator.__langCodeMap[textLang]
+
+    # [(prefix,text)]
+    def analyzeTextByEngine(self, text: str, lang: str) -> list[Tuple[str, str]]:
+        anabody = {
+            "jsonrpc": "2.0",
+            "method": "LMT_split_text",
+            "params": {
+                "texts": [
+                    text
+                ],
+                "lang": {
+                    "lang_user_selected": self.getApiLangCode(lang)
+                }
+            },
+            "id": random.randint(10000000, 100000000)
+        }
+
+        anaresponse = requests.post(self.analyzeApi, json=anabody)
+        anaresJson = json.loads(anaresponse.text)
+        digIntoRes = anaresJson["result"]["texts"][0]["chunks"]
+        texts = []
+        for chunk in digIntoRes:
+            senten = chunk["sentences"][0]
+            texts.append((senten["prefix"], senten["text"]))
+        return texts
+
+    def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
+        if len(text) > 20:
+            self.analyzeTextByEngine(text, fromLang)
+        pass
