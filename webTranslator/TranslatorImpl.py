@@ -177,7 +177,13 @@ class DeepLTranslator(WebTranslator):
                     text
                 ],
                 "lang": {
-                    "lang_user_selected": self.getApiLangCode(lang)
+                    "lang_user_selected": self.getApiLangCode(lang),
+                    "preference": {
+                        "weight": {
+                            self.getApiLangCode(lang): random.uniform(8,10) 
+                        },
+                        "default": "default"
+                    }
                 }
             },
             "id": random.randint(10000000, 100000000)
