@@ -1,4 +1,3 @@
-import re
 import xRayXmlParser
 import webTranslator
 import os
@@ -18,9 +17,10 @@ def main(argv):
     appKey = None
     analyzeCharCount = 0
     runnableCheck = False
+    forceTrans = None
 
     opts, args = getopt.getopt(argv[1:], "che:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "reusePath=", "analyzeCharCount="])
+                               "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount="])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -49,6 +49,8 @@ def main(argv):
             analyzeCharCount = int(arg)
         elif opt in ("-r", "--reusePath"):
             reuseDir = arg
+        elif opt in ("--forceTransFiles"):
+            forceTrans = arg.split(",")
 
     # validation
     assert engine is not None, "engine must be provided."
@@ -116,7 +118,7 @@ def main(argv):
                 else:
                     pastIds.append(entity.id)
                 print(entity.id, end='')
-                if entity.id in reuseTexts:
+                if entity.id in reuseTexts and xRFile not in forceTrans:
                     doneHere[entity.id] = reuseTexts[entity.id]
                     print('.', end='')
                     continue
@@ -145,7 +147,8 @@ def main(argv):
 
                         print('.', end='')
                         globalReqCount = globalReqCount + 1
-                        globalTransChars = globalTransChars + len(piece["content"])
+                        globalTransChars = globalTransChars + \
+                            len(piece["content"])
                     else:
                         piece["translated"] = piece["content"]
                 transedWholeText = ""

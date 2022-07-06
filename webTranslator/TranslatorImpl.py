@@ -3,7 +3,7 @@ import re
 from time import sleep
 import timeit
 from typing import Tuple
-from .entityDefinition import *
+from .entityDefinition import WebTranslator
 import urllib
 import requests
 import json
@@ -55,7 +55,7 @@ class TransmartQQTranslator(WebTranslator):
         if len(text) > self.needAnalyzeCharCount and self.needAnalyzeCharCount > 0:
             try:
                 textList = self.analyzeTextByEngine(text)
-            except:
+            except ConnectionError:
                 pass
 
         if(timeit.default_timer()-self.lastRequest < self.eachRequestGap):
@@ -65,7 +65,7 @@ class TransmartQQTranslator(WebTranslator):
         response = None
         try:
             response = requests.post(self.mainTransApi, json=body)
-        except requests.exceptions.ConnectionError as err:
+        except requests.exceptions.ConnectionError:
             print("(aborted, wait " + str(self.timedOutGap) + "s and try again)")
             sleep(self.timedOutGap)
             # maybe set self.clientKey = "" here
@@ -180,7 +180,7 @@ class DeepLTranslator(WebTranslator):
                     "lang_user_selected": self.getApiLangCode(lang),
                     "preference": {
                         "weight": {
-                            self.getApiLangCode(lang): random.uniform(8,10) 
+                            self.getApiLangCode(lang): random.uniform(8, 10)
                         },
                         "default": "default"
                     }
