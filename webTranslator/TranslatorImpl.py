@@ -1,8 +1,8 @@
 from hashlib import md5
 import re
-from time import sleep
+from time import sleep, time
 import timeit
-from typing import Tuple
+from typing import Any, Dict, Tuple
 from .entityDefinition import WebTranslator
 import urllib
 import requests
@@ -198,7 +198,39 @@ class DeepLTranslator(WebTranslator):
             texts.append((senten["prefix"], senten["text"]))
         return texts
 
+    def generateJobs(self, texts: list[Tuple[str, str]]) -> list[Dict[str, Any]]:
+        # before 5 after 1
+        # prefix strip
+        # 12 entiy a request, context shared, id not reset in next request
+
+        entities = []
+        for i in range(len(texts)):
+            entities.append(1)
+
+        return []
+
     def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
-        if len(text) > 20:
-            self.analyzeTextByEngine(text, fromLang)
+        textPairs = self.analyzeTextByEngine(text, fromLang)
+        body = {
+            "jsonrpc": "2.0",
+            "method": "LMT_handle_jobs",
+            "params": {
+                "jobs": self.generateJobs(textPairs),
+                "lang": {
+                    "preference": {
+                        "weight": {},
+                        "default": "default"
+                    },
+                    "source_lang_computed": self.getApiLangCode(fromLang),
+                    "target_lang": self.getApiLangCode(toLang)
+                },
+                "priority": 1,
+                "commonJobParams": {
+                    "browserType": 1,
+                    "formality": None
+                },
+                "timestamp": int(time()*1000)
+            },
+            "id": random.randint(10000000, 100000000)
+        }
         pass
