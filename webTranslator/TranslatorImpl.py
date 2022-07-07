@@ -1,5 +1,6 @@
 from hashlib import md5
 import re
+import math
 from time import sleep, time
 import timeit
 from typing import Any, Dict, Tuple
@@ -162,7 +163,9 @@ class DeepLTranslator(WebTranslator):
         super().__init__()
         self.analyzeApi = "https://www2.deepl.com/jsonrpc?method=LMT_split_text"
         self.mainTransApi = "https://www2.deepl.com/jsonrpc?method=LMT_handle_jobs"
-        self.eachRequestGap = 0.5
+        self.eachRequestGap = 3
+        self.timedOutGap = 5
+        self.jobsPerRequest = 12
 
     def getApiLangCode(self, textLang: str) -> str:
         return DeepLTranslator.__langCodeMap[textLang]
@@ -203,19 +206,43 @@ class DeepLTranslator(WebTranslator):
         # prefix strip
         # 12 entiy a request, context shared, id not reset in next request
 
-        entities = []
+        if len(texts) == 1:
+            preferred_num_beams = 4
+        else:
+            preferred_num_beams = 1
+
+        jobs = []
         for i in range(len(texts)):
-            entities.append(1)
+            theEnt = texts[i]
+            theJob = {
+                "kind": "default",
+                "sentences": [
+                    {
+                        "text": theEnt[1],
+                        "id": i,
+                        "prefix": theEnt[0].strip()
+                    }
+                ],
+                "raw_en_context_before": [],
+                "raw_en_context_after": [],
+                "preferred_num_beams": preferred_num_beams
+            }
+            for j in range(max(0, i-5), max(0, i)):
+                theJob["raw_en_context_before"].append(texts[j][1])
 
-        return []
+            if i+1 < len(texts):
+                theJob["raw_en_context_after"].append(texts[i+1][1])
 
-    def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
-        textPairs = self.analyzeTextByEngine(text, fromLang)
+            jobs.append(theJob)
+
+        return jobs
+
+    def transWithRange(self, jobs: list[Dict[str, Any]], start: int, end: int, fromLang: str, toLang: str) -> str:
         body = {
             "jsonrpc": "2.0",
             "method": "LMT_handle_jobs",
             "params": {
-                "jobs": self.generateJobs(textPairs),
+                "jobs": jobs[start:end],
                 "lang": {
                     "preference": {
                         "weight": {},
@@ -233,4 +260,43 @@ class DeepLTranslator(WebTranslator):
             },
             "id": random.randint(10000000, 100000000)
         }
-        pass
+
+        try:
+            response = requests.post(self.mainTransApi, json=body)
+        except requests.exceptions.ConnectionError:
+            print("(aborted, wait " + str(self.timedOutGap) + "s and try again)")
+            sleep(self.timedOutGap)
+            # maybe set self.clientKey = "" here
+            return self.transWithRange(jobs, start, end, fromLang, toLang)
+        resJson = json.loads(response.text)
+        self.lastRequest = timeit.default_timer()
+        res = ""
+        # if resJson["header"]["ret_code"] == 'succ':
+        if 1 == 1:
+            # res = resJson["auto_translation"][0]
+            for txt in resJson["result"]["translations"]:
+                res = res + txt["beams"][0]["sentences"][0]["text"]
+        else:
+            raise ValueError
+
+        return res
+
+    def doTranslate(self, text: str, fromLang: str, toLang: str) -> str:
+        if fromLang == self.autoLangCode:
+            fromLang = self.detectLang(text)
+
+        # if this goes wrong means this engine wont do
+        textPairs = self.analyzeTextByEngine(text, fromLang)
+
+        if(timeit.default_timer()-self.lastRequest < self.eachRequestGap):
+            sleep(self.eachRequestGap)
+
+        jobs = self.generateJobs(textPairs)
+
+        res = ""
+        for batchI in range(math.ceil(len(jobs)/self.jobsPerRequest)):
+            # transWithRange(self, jobs: list[Dict[str, Any]], start: int, end: int, fromLang: str, toLang: str):
+            res = res+self.transWithRange(jobs=jobs[batchI*self.jobsPerRequest:min(
+                (batchI+1)*self.jobsPerRequest, len(jobs))])
+
+        return res
