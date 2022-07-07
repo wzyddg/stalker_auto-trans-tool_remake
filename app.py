@@ -33,7 +33,7 @@ def main(argv):
     appKey = None
     analyzeCharCount = 0
     runnableCheck = False
-    forceTrans = None
+    forceTrans = []
 
     opts, args = getopt.getopt(argv[1:], "che:i:k:f:t:p:a:r:", [
                                "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount="])
