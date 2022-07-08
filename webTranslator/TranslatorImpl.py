@@ -296,7 +296,7 @@ class DeepLTranslator(WebTranslator):
         res = ""
         for batchI in range(math.ceil(len(jobs)/self.jobsPerRequest)):
             # transWithRange(self, jobs: list[Dict[str, Any]], start: int, end: int, fromLang: str, toLang: str):
-            res = res+self.transWithRange(jobs=jobs[batchI*self.jobsPerRequest:min(
-                (batchI+1)*self.jobsPerRequest, len(jobs))])
+            res = res+self.transWithRange(jobs, batchI*self.jobsPerRequest, min(
+                (batchI+1)*self.jobsPerRequest, len(jobs)), fromLang, toLang)
 
         return res
