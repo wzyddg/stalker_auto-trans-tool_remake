@@ -62,6 +62,17 @@ def escapeXmlContentString(text: str) -> str:
     return replaced
 
 
+def getGameplayPotentialTexts(text: str) -> set[str]:
+    dec = re.compile(
+        r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
+    resDec = dec.findall(text)
+    return set(resDec)
+
+
+def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
+    pass
+
+
 def normalize_xml_string(xmlStr: str) -> str:
     replaced = re.sub('&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub('&[\s]+lt;', '&lt;', replaced)
@@ -90,6 +101,10 @@ def getEncodingDeclaration(xmlStr: str) -> str:
         return None
 
 
+def doesTextLookLikeId(piece: str) -> bool:
+    return False
+
+
 def cutText(text: str) -> List[Dict[str, str]]:
     seps = allSeparateTextCpl.findall(text)
     pieces = allSeparateTextCpl.split(text)
@@ -109,6 +124,7 @@ def cutText(text: str) -> List[Dict[str, str]]:
                 "content": pieces[i]
             })
         if(i < len(seps)):
+            # cleaning for $$ACTION_XX$$
             washed = re.sub(r"(?<=\$\$)[\s]*(?=[_a-zA-Z0-9])", "", seps[i])
             washed = re.sub(r"(?<=[_a-zA-Z0-9])[\s]*(?=\$\$)", "", washed)
             res.append({

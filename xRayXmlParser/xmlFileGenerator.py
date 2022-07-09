@@ -15,3 +15,11 @@ def generateOutputXml(filePath: str, texts: Dict[str, str]):
     file = open(filePath, "w", encoding="utf-8")
     file.write(fileText)
     file.close()
+
+
+def generateOutputXmlFromString(filePath: str, text: str):
+    if not text.strip().startswith("<?xml"):
+        text = '<?xml version="1.0" encoding="utf-8"?>\n'+text.strip()
+    file = open(filePath, "w", encoding="utf-8")
+    file.write(text)
+    file.close()

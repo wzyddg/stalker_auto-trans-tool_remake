@@ -28,7 +28,7 @@ def extract_entity_from_root(root: etree._Element) -> List[TextEntity]:
     return res
 
 
-def parse_xray_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> List[TextEntity]:
+def parse_xray_text_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> List[TextEntity]:
     tree = None
     f = None
     root = None
@@ -60,3 +60,28 @@ def parse_xray_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) ->
             print(err)
 
     return extract_entity_from_root(root)
+
+
+def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
+    for encoding in candidateEncodings:
+        try:
+            f = open(filePath, "r", encoding=encoding)
+            wholeText = f.read()
+        except UnicodeDecodeError:
+            f.close()
+            print(" ├──" + filePath + " is not encoded with "+encoding)
+            continue
+        else:
+            f.close()
+            print(" ├──" + filePath + " successfully decoded with "+encoding)
+            break
+
+    try:
+        wholeText = normalize_xml_string(wholeText)
+    except (etree.XMLSyntaxError, ValueError) as err:
+        print(filePath + " is not a parsable xml")
+        print(err)
+
+    guys = getGameplayPotentialTexts(wholeText)
+
+    return (wholeText, guys)

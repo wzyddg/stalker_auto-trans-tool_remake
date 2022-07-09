@@ -11,7 +11,8 @@ from .entityDefinition import *
 from .xmlFileGenerator import *
 
 __all__ = [
-    "parse_xray_xml",
+    "parse_xray_text_xml",
+    "parse_xray_gameplay_xml",
     "generateOutputXml",
     "TextEntity",
     "rusLettersString",
@@ -22,8 +23,11 @@ __all__ = [
     "rusLetCpl",
     "actionCpl",
     "placeholderCpl",
+    "doTextLookLikeId",
     "scriptCpl",
     "allSeparateTextCpl",
     "getRecommendLangText",
+    "generateOutputXmlFromString",
+    "replaceFromText",
     "allSeparateTextCpl"
 ]

@@ -3,6 +3,7 @@ import webTranslator
 import os
 import sys
 import getopt
+import re
 
 
 class Unbuffered(object):
@@ -34,9 +35,10 @@ def main(argv):
     analyzeCharCount = 0
     runnableCheck = False
     forceTrans = []
+    transFunction = 'text'
 
     opts, args = getopt.getopt(argv[1:], "che:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount="])
+                               "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function="])
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -61,7 +63,6 @@ Options:
                                                     concat with ','  eg: a.xml,b.xml
   --function=<value>                            (Optional)translating function, default text. eg: text gameplay
         """
-
             print(helpText)
             sys.exit()
         elif opt in ("-e", "--engine"):
@@ -84,6 +85,8 @@ Options:
             reuseDir = arg
         elif opt in ("--forceTransFiles"):
             forceTrans = arg.split(",")
+        elif opt in ("--function"):
+            transFunction = arg
 
     # validation
     assert engine is not None, "engine must be provided."
@@ -110,7 +113,7 @@ Options:
 
     # actual logic
     lst = os.listdir(textDir)
-    doneDir = os.path.join(textDir, "translated")
+    doneDir = os.path.join(textDir, "translated_"+engine)
     if not os.path.exists(doneDir):
         os.mkdir(doneDir)
     doneFileLst = os.listdir(doneDir)
@@ -124,82 +127,97 @@ Options:
             reFullPath = os.path.join(reuseDir, reFile)
             if os.path.isfile(reFullPath):
                 print("reading exiting translated file:"+reFile)
-                exEnts = xRayXmlParser.parse_xray_xml(
+                exEnts = xRayXmlParser.parse_xray_text_xml(
                     reFullPath, ['utf-8', 'cp1251'])
                 for ent in exEnts:
                     reuseTexts[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
                         1]
 
-    globalTranslator = getTranslator(engine)
-    benchPlayerTrans = getBenchPlayerTrans(engine)
-
     globalReqCount = 0
     globalTransChars = 0
-
+    globalTranslator = getTranslator(engine)
+    benchPlayerTrans = getBenchPlayerTrans(engine)
     pastIds = []
     redundantIds = []
+
+    def translateOneString(text: str, fl: str):
+        pieces = xRayXmlParser.cutText(text)
+        nonlocal globalReqCount
+        nonlocal globalTransChars
+        for piece in pieces:
+            if(piece["needTrans"]):
+                langCode = fl
+                if(langCode == 'text'):
+                    langCode = sourceLangForTextTag
+                if langCode == targetLang:
+                    piece["translated"] = piece["content"]
+                else:
+                    if not runnableCheck:
+                        transedPie = globalTranslator.doTranslate(
+                            piece["content"], langCode, targetLang)
+                        if transedPie == piece["content"] and benchPlayerTrans is not None:
+                            transedPie = benchPlayerTrans.doTranslate(
+                                piece["content"], langCode, targetLang)
+                        piece["translated"] = transedPie
+
+                    else:
+                        # runnable check
+                        piece["translated"] = piece["content"]
+
+                print('.', end='')
+                globalReqCount = globalReqCount + 1
+                globalTransChars = globalTransChars + len(piece["content"])
+            else:
+                piece["translated"] = piece["content"]
+        transedWholeText = ""
+        for piece in pieces:
+            transedWholeText = transedWholeText + piece["translated"]
+        return transedWholeText
 
     for xRFile in lst:
         fullPath = os.path.join(textDir, xRFile)
         if os.path.isfile(fullPath) and xRFile not in doneFileLst:
             print("\n\n"+xRFile+":")
-            texts = xRayXmlParser.parse_xray_xml(fullPath, ['cp1251', 'utf-8'])
-            print(" └──"+fullPath + " got " + str(len(texts)) + " texts!")
-            doneHere = dict()
-            for entity in texts:
-                if entity.id in pastIds and entity.id not in redundantIds:
-                    redundantIds.append(entity.id)
-                else:
-                    pastIds.append(entity.id)
-                print(entity.id, end='')
-                if entity.id in reuseTexts and xRFile not in forceTrans:
-                    doneHere[entity.id] = reuseTexts[entity.id]
-                    print('.', end='')
-                    continue
 
-                chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
-                pieces = xRayXmlParser.cutText(chosen[1])
-                for piece in pieces:
-                    if(piece["needTrans"]):
-                        langCode = chosen[0]
-                        if(langCode == 'text'):
-                            langCode = sourceLangForTextTag
-                        if langCode == targetLang:
-                            piece["translated"] = piece["content"]
-                        else:
-                            if not runnableCheck:
-                                transedPie = globalTranslator.doTranslate(
-                                    piece["content"], langCode, targetLang)
-                                if transedPie == piece["content"] and benchPlayerTrans is not None:
-                                    transedPie = benchPlayerTrans.doTranslate(
-                                        piece["content"], langCode, targetLang)
-                                piece["translated"] = transedPie
-
-                            else:
-                                # runnable check
-                                piece["translated"] = piece["content"]
-
-                        print('.', end='')
-                        globalReqCount = globalReqCount + 1
-                        globalTransChars = globalTransChars + \
-                            len(piece["content"])
+            if transFunction == 'text':
+                texts = xRayXmlParser.parse_xray_text_xml(
+                    fullPath, ['cp1251', 'utf-8'])
+                print(" └──"+fullPath + " got " + str(len(texts)) + " texts!")
+                doneHere = dict()
+                for entity in texts:
+                    if entity.id in pastIds and entity.id not in redundantIds:
+                        redundantIds.append(entity.id)
                     else:
-                        piece["translated"] = piece["content"]
-                transedWholeText = ""
-                for piece in pieces:
-                    transedWholeText = transedWholeText + piece["translated"]
+                        pastIds.append(entity.id)
+                    print(entity.id, end='')
+                    if entity.id in reuseTexts and xRFile not in forceTrans:
+                        doneHere[entity.id] = reuseTexts[entity.id]
+                        print('.', end='')
+                        continue
 
-                doneHere[entity.id] = transedWholeText
+                    chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
+                    transedWholeText = translateOneString(chosen[1], chosen[0])
+                    doneHere[entity.id] = transedWholeText
 
-            xRayXmlParser.generateOutputXml(
-                os.path.join(textDir, "translated", xRFile), doneHere)
-            print("")
+                xRayXmlParser.generateOutputXml(
+                    os.path.join(textDir, "translated_"+engine, xRFile), doneHere)
+                print("")
 
+            else:
+                wholeText, candidates = xRayXmlParser.parse_xray_gameplay_xml(
+                    fullPath, ['cp1251', 'utf-8'])
+                for cand in candidates:
+                    if(cand in reuseTexts):
+                        continue
+                    res = noLettersPattern.fullmatch(piece)
+                    # todo
+                    pass
         else:
             print("\n\n"+fullPath+" is not a file or already existed.")
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
-    print(r"translated files are located at {path}\translated")
+    print("translated files are located at " +
+          os.path.join(textDir, "translated_"+engine))
     print("total request:"+str(globalReqCount))
     print("total char:"+str(globalTransChars))
     print("these ids are redundant, please check manually:")
