@@ -1,9 +1,10 @@
+from time import time
 import xRayXmlParser
 import webTranslator
 import os
 import sys
 import getopt
-import re
+from xRayXmlParser import xRayTextAnalyzer
 
 
 class Unbuffered(object):
@@ -174,6 +175,9 @@ Options:
             transedWholeText = transedWholeText + piece["translated"]
         return transedWholeText
 
+    textIdPrefix = "sgtat_auto_generate_text_"+str(int(time()))+"_"
+    totalGenerateCount = 0
+    extract = {}
     for xRFile in lst:
         fullPath = os.path.join(textDir, xRFile)
         if os.path.isfile(fullPath) and xRFile not in doneFileLst:
@@ -203,17 +207,37 @@ Options:
                     os.path.join(textDir, "translated_"+engine, xRFile), doneHere)
                 print("")
 
-            else:
+            elif transFunction == 'gameplay':
                 wholeText, candidates = xRayXmlParser.parse_xray_gameplay_xml(
                     fullPath, ['cp1251', 'utf-8'])
+                repDict = {}
                 for cand in candidates:
-                    if(cand in reuseTexts):
+                    if cand in reuseTexts:
+                        print('!', end='')
                         continue
-                    res = noLettersPattern.fullmatch(piece)
+                    if doesTextLookLikeId(cand):
+                        continue
                     # todo
-                    pass
+                    transedWholeText = translateOneString(
+                        cand, globalTranslator.autoLangCode)
+                    repDict[cand] = transedWholeText
+                if len(repDict) > 0:
+                    for key in repDict:
+                        extKey = textIdPrefix+str(totalGenerateCount)
+                        totalGenerateCount = totalGenerateCount+1
+                        extract[extKey] = repDict[key]
+                        repDict[key] = extKey
+
+                    repdText = xRayTextAnalyzer.replaceFromText(
+                        wholeText, repDict)
+                    xRayXmlParser.generateOutputXmlFromString(os.path.join(
+                        textDir, "translated_"+engine, xRFile), repdText)
+                print("")
         else:
-            print("\n\n"+fullPath+" is not a file or already existed.")
+            print("\n"+fullPath+" is not a file or already existed.")
+
+    xRayXmlParser.generateOutputXml(os.path.join(
+        textDir, "translated_"+engine, "_____put_this_to_text_folder.xml"), extract)
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " +

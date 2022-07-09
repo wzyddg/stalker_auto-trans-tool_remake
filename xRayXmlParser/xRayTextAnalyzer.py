@@ -1,6 +1,5 @@
 import re
 from typing import Any, Dict, List, Tuple
-
 from .entityDefinition import *
 
 rusLettersString = "АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщъЫыьЭэЮюЯяЬ"
@@ -70,10 +69,14 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
 
 
 def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
-    pass
+    keys = list(replacement.keys())
+    keys.sort(key=lambda x: len(x), reverse=True)
+    for repKey in keys:
+        text = text.replace(repKey, replacement[repKey])
+    return text
 
 
-def normalize_xml_string(xmlStr: str) -> str:
+def normalize_xml_string(xmlStr: str, needFixST: bool = True) -> str:
     replaced = re.sub('&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub('&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(
@@ -81,14 +84,15 @@ def normalize_xml_string(xmlStr: str) -> str:
     replaced = re.sub('<\?xml[^>]+encoding=[^>]+\?>', '', replaced)
     replaced = re.sub('<!--[\s\S]*?-->', '', replaced)
 
-    # that's all I can do to convert < in xml, if still not work, I will use regex or give up
+    # convert < in xml
     replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced)
 
-    if not replaced.strip().startswith("<string_table>"):
-        replaced = "<string_table>" + replaced + "</string_table>"
+    if needFixST:
+        if not replaced.strip().startswith("<string_table>"):
+            replaced = "<string_table>" + replaced + "</string_table>"
 
-    # I cant believe in some case , there are half a string tag after the end of </string_table>
-    replaced = re.sub(r"</string_table>[\s\S]+", "</string_table>", replaced)
+        # I cant believe in some case , there are half a string tag after the end of </string_table>
+        replaced = re.sub(r"</string_table>[\s\S]+", "</string_table>", replaced)
     return replaced
 
 
@@ -101,8 +105,10 @@ def getEncodingDeclaration(xmlStr: str) -> str:
         return None
 
 
-def doesTextLookLikeId(piece: str) -> bool:
-    return False
+def doesTextLookLikeId(text: str) -> bool:
+    if len(rusLetCpl.findall(text)) > 0:
+        return False
+    return " " not in text
 
 
 def cutText(text: str) -> List[Dict[str, str]]:

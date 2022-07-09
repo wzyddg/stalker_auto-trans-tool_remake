@@ -77,7 +77,7 @@ def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1
             break
 
     try:
-        wholeText = normalize_xml_string(wholeText)
+        wholeText = normalize_xml_string(wholeText, needFixST=False)
     except (etree.XMLSyntaxError, ValueError) as err:
         print(filePath + " is not a parsable xml")
         print(err)

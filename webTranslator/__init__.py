@@ -10,5 +10,6 @@ from .TranslatorImpl import *
 
 __all__ = [
     "BaiduTranslator",
-    "TransmartQQTranslator"
+    "TransmartQQTranslator",
+    "DeepLTranslator"
 ]
