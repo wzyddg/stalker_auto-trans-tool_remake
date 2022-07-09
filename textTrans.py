@@ -25,7 +25,7 @@ def main(argv):
 
     # parameters
     engine = None
-    sourceLangForTextTag = None
+    sourceLangForTextTag = "rus"
     textDir = None
     reuseDir = None
     targetLang = None
@@ -40,12 +40,29 @@ def main(argv):
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            print("\nS.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.\n")
-            print("Version 2.0.1, Updated at Jul 1st 2022\n")
-            print("by wzyddgFB from baidu S.T.A.L.K.E.R. tieba\n")
-            print("usage:")
-            print('    '+argv[0]+' -e <use what translate engine, eg: baidu qq> -i <(Optional)appId of engine> -k <(Optional)appKey of engine> -f <(Optional)from what language if string uses text tag, eg: eng rus ukr> -t <to what language, eg: eng chs> -p <path of text xml folder> -r <(Optional)path of existing translated xml folder for translation reuse> -a <(Optional)more than how many characters does the sentence need qq analyze, default 0, means don\'t analyze(qq engine only)>')
-            print('\nor: '+argv[0]+' --engine=<use what translate engine> --appId=<appId of engine> --appKey=<appKey of engine> --fromLang=<(Optional)from what language> --toLang <to what language> --path=<path of text xml folder> --reusePath <(Optional)path of existing translated xml folder> --analyzeCharCount=<(Optional)how many characters need qq analyze>\n')
+            helpText = """
+S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.
+Version 2.0.2, Updated at Jul 9th 2022
+by wzyddgFB from baidu S.T.A.L.K.E.R. tieba
+
+Options:
+  -e <value>|--engine=<value>                   use what translate engine, eg: baidu qq deepl
+  -p <value>|--path=<value>                     path of xml folder, always quote with ""
+  -t <value>|--toLang=<value>                   to what language, eg: eng chs
+  -c |--runnableCheck                           (Optional)just analyze files, won't do translation
+  -i <value>|--appId=<value>                    (Optional)appId of engine, required for baidu
+  -k <value>|--appKey=<value>                   (Optional)appKey of engine, required for baidu
+  -f <value>|--fromLang=<value>                 (Optional)from what language if string uses text tag, default rus. eg: eng rus ukr
+  -a <value>|--analyzeCharCount=<value>         (Optional)more than how many chars does the sentence need qq analyze,
+                                                    default 0, means don't analyze(qq engine only)
+  -r <value>|--reusePath=<value>                (Optional)path of existing translated xml folder.
+                                                    for gameplay translating text id protecting or text translating accelerating
+  --forceTransFiles=<value>                     (Optional)for listed files, ignore existing translated xml files.
+                                                    concat with ','  eg: a.xml,b.xml
+  --function=<value>                            (Optional)translating function, default text. eg: text gameplay
+        """
+
+            print(helpText)
             sys.exit()
         elif opt in ("-e", "--engine"):
             engine = arg
@@ -88,7 +105,7 @@ def main(argv):
     def getBenchPlayerTrans(e) -> webTranslator.WebTranslator:
         if e == 'qq':
             return webTranslator.BaiduTranslator(appId, appKey)
-        elif e == 'baidu':
+        else:
             return webTranslator.TransmartQQTranslator(1)
 
     # actual logic
@@ -110,7 +127,8 @@ def main(argv):
                 exEnts = xRayXmlParser.parse_xray_xml(
                     reFullPath, ['utf-8', 'cp1251'])
                 for ent in exEnts:
-                    reuseTexts[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[1]
+                    reuseTexts[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
+                        1]
 
     globalTranslator = getTranslator(engine)
     benchPlayerTrans = getBenchPlayerTrans(engine)
