@@ -256,6 +256,11 @@ Options:
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
 
+                    if "script_text_all_in" in extract:
+                        extract["script_text_all_in"] = extract["script_text_all_in"]+transedStr
+                    else:
+                        extract["script_text_all_in"] = transedStr
+
                     # escape back
                     repDict['"'+xRayXmlParser.escapeLiteralText(
                         cand)+'"'] = '"'+xRayXmlParser.escapeLiteralText(transedStr)+'"'
@@ -267,7 +272,9 @@ Options:
                 print("")
         else:
             print("\n"+fullPath+" is not a file or already existed.")
-
+    if transFunction in ['gameplay', 'script']:
+        xRayXmlParser.generateOutputXml(os.path.join(
+            textDir, "translated_"+engine, transFunction+"__put_this_to_text_folder.xml"), extract)
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " +
           os.path.join(textDir, "translated_"+engine))
