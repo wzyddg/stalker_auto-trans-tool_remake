@@ -25,3 +25,4 @@ Options:
   --forceTransFiles=<value>                     (Optional)for listed files, ignore existing translated xml files.
                                                     concat with ','. eg: a.xml,b.xml
   --function=<value>                            (Optional)translating function, default text. eg: text gameplay
+ 
