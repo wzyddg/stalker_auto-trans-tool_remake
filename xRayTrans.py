@@ -44,7 +44,7 @@ def main(argv):
         if opt in ("-h", "--help"):
             helpText = """
 S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.
-Version 2.0.2, Updated at Jul 10th 2022
+Version 2.0.2, Updated at Jul 11th 2022
 by wzyddgFB from baidu S.T.A.L.K.E.R. tieba
 
 Options:
