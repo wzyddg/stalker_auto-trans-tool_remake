@@ -4,7 +4,6 @@ import webTranslator
 import os
 import sys
 import getopt
-from xRayXmlParser import xRayTextAnalyzer
 
 
 class Unbuffered(object):
@@ -40,7 +39,7 @@ def main(argv):
 
     opts, args = getopt.getopt(argv[1:], "che:i:k:f:t:p:a:r:", [
                                "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function="])
-
+    print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             helpText = """
@@ -215,7 +214,7 @@ Options:
                     if cand in reuseTexts:
                         print('!', end='')
                         continue
-                    if doesTextLookLikeId(cand):
+                    if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
                     # todo
                     transedWholeText = translateOneString(
@@ -228,7 +227,7 @@ Options:
                         extract[extKey] = repDict[key]
                         repDict[key] = extKey
 
-                    repdText = xRayTextAnalyzer.replaceFromText(
+                    repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
                     xRayXmlParser.generateOutputXmlFromString(os.path.join(
                         textDir, "translated_"+engine, xRFile), repdText)
