@@ -136,7 +136,7 @@ Options:
             if os.path.isfile(reFullPath):
                 print("reading exiting translated file:"+reFile)
                 exEnts = xRayXmlParser.parse_xray_text_xml(
-                    reFullPath, ['utf-8', 'cp1251'])
+                    reFullPath, ['utf-8', 'cp1252', 'cp1251'])
                 for ent in exEnts:
                     reuseTexts[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
                         1]
@@ -192,7 +192,7 @@ Options:
 
             if transFunction == 'text':
                 texts = xRayXmlParser.parse_xray_text_xml(
-                    fullPath, ['cp1251', 'utf-8'])
+                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 print(" └──"+fullPath + " got " + str(len(texts)) + " texts!")
                 doneHere = dict()
                 for entity in texts:
@@ -216,7 +216,7 @@ Options:
 
             elif transFunction == 'gameplay':
                 wholeText, candidates = xRayXmlParser.parse_xray_gameplay_xml(
-                    fullPath, ['cp1251', 'utf-8'])
+                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 repDict = {}
                 for cand in candidates:
                     if cand in reuseTexts:
@@ -242,12 +242,28 @@ Options:
                 print("")
 
             elif transFunction == 'script':
-                pass
+                wholeText, candidates = xRayXmlParser.parse_xray_script_xml(
+                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
+                repDict = {}
+                for candWithQuote in candidates:
+                    cand = candWithQuote[1:-1]
+                    if cand in reuseTexts:
+                        print('!', end='')
+                        continue
+                    if xRayXmlParser.doesTextLookLikeId(cand):
+                        continue
+                    # todo
+                    transedWholeText = translateOneString(
+                        cand, globalTranslator.autoLangCode)
+                    repDict[candWithQuote] = '"'+transedWholeText+'"'
+                if len(repDict) > 0:
+                    repdText = xRayXmlParser.replaceFromText(
+                        wholeText, repDict)
+                    xRayXmlParser.generateOutputXmlFromString(os.path.join(
+                        textDir, "translated_"+engine, xRFile), repdText, needXmlHeader=False)
+                print("")
         else:
             print("\n"+fullPath+" is not a file or already existed.")
-
-    xRayXmlParser.generateOutputXml(os.path.join(
-        textDir, "translated_"+engine, "_____put_this_to_text_folder.xml"), extract)
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " +

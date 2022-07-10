@@ -62,10 +62,19 @@ def escapeXmlContentString(text: str) -> str:
 
 
 def getGameplayPotentialTexts(text: str) -> set[str]:
-    dec = re.compile(
+    gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
-    resDec = dec.findall(text)
-    return set(resDec)
+    res = gpptn.findall(text)
+    return set(res)
+
+
+def getScriptPotentialTexts(text: str) -> set[str]:
+    inStrQuotePtn = re.compile(r'(?<!\\)\\"')
+    text = inStrQuotePtn.sub("'", text)
+    textPa = '"[\''+rusLettersString+r' @№\$%«»,-.!:?_a-zA-Z0-9\[\]\(\)\\]*"'
+    scptn = re.compile(textPa)
+    res = scptn.findall(text)
+    return set(res)
 
 
 def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
@@ -92,7 +101,8 @@ def normalize_xml_string(xmlStr: str, needFixST: bool = True) -> str:
             replaced = "<string_table>" + replaced + "</string_table>"
 
         # I cant believe in some case , there are half a string tag after the end of </string_table>
-        replaced = re.sub(r"</string_table>[\s\S]+", "</string_table>", replaced)
+        replaced = re.sub(
+            r"</string_table>[\s\S]+", "</string_table>", replaced)
     return replaced
 
 
@@ -108,6 +118,8 @@ def getEncodingDeclaration(xmlStr: str) -> str:
 def doesTextLookLikeId(text: str) -> bool:
     if len(rusLetCpl.findall(text)) > 0:
         return False
+    if "_" in text:
+        return True
     return " " not in text
 
 

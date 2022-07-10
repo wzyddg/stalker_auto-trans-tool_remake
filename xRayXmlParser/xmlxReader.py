@@ -76,12 +76,26 @@ def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1
             print(" ├──" + filePath + " successfully decoded with "+encoding)
             break
 
-    try:
-        wholeText = normalize_xml_string(wholeText, needFixST=False)
-    except (etree.XMLSyntaxError, ValueError) as err:
-        print(filePath + " is not a parsable xml")
-        print(err)
+    wholeText = normalize_xml_string(wholeText, needFixST=False)
 
     guys = getGameplayPotentialTexts(wholeText)
+
+    return (wholeText, guys)
+
+def parse_xray_script_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
+    for encoding in candidateEncodings:
+        try:
+            f = open(filePath, "r", encoding=encoding)
+            wholeText = f.read()
+        except UnicodeDecodeError:
+            f.close()
+            print(" ├──" + filePath + " is not encoded with "+encoding)
+            continue
+        else:
+            f.close()
+            print(" ├──" + filePath + " successfully decoded with "+encoding)
+            break
+
+    guys = getScriptPotentialTexts(wholeText)
 
     return (wholeText, guys)
