@@ -27,7 +27,8 @@ __all__ = [
     "scriptCpl",
     "allSeparateTextCpl",
     "getRecommendLangText",
-    "generateOutputXmlFromString",
+    "escapeLiteralText",
+    "generateOutputFileFromString",
     "replaceFromText",
     "allSeparateTextCpl"
 ]

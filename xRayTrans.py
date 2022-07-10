@@ -207,8 +207,8 @@ Options:
                         continue
 
                     chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
-                    transedWholeText = translateOneString(chosen[1], chosen[0])
-                    doneHere[entity.id] = transedWholeText
+                    transedStr = translateOneString(chosen[1], chosen[0])
+                    doneHere[entity.id] = transedStr
 
                 xRayXmlParser.generateOutputXml(
                     os.path.join(textDir, "translated_"+engine, xRFile), doneHere)
@@ -225,9 +225,9 @@ Options:
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
                     # todo
-                    transedWholeText = translateOneString(
+                    transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
-                    repDict[cand] = transedWholeText
+                    repDict[cand] = transedStr
                 if len(repDict) > 0:
                     for key in repDict:
                         extKey = textIdPrefix+str(totalGenerateCount)
@@ -237,7 +237,7 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                    xRayXmlParser.generateOutputXmlFromString(os.path.join(
+                    xRayXmlParser.generateOutputFileFromString(os.path.join(
                         textDir, "translated_"+engine, xRFile), repdText)
                 print("")
 
@@ -253,13 +253,16 @@ Options:
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
                     # todo
-                    transedWholeText = translateOneString(
+                    transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
-                    repDict[candWithQuote] = '"'+transedWholeText+'"'
+
+                    # escape back
+                    repDict['"'+xRayXmlParser.escapeLiteralText(
+                        cand)+'"'] = '"'+xRayXmlParser.escapeLiteralText(transedStr)+'"'
                 if len(repDict) > 0:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                    xRayXmlParser.generateOutputXmlFromString(os.path.join(
+                    xRayXmlParser.generateOutputFileFromString(os.path.join(
                         textDir, "translated_"+engine, xRFile), repdText, needXmlHeader=False)
                 print("")
         else:

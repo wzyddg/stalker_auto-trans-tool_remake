@@ -17,7 +17,7 @@ def generateOutputXml(filePath: str, texts: Dict[str, str]):
     file.close()
 
 
-def generateOutputXmlFromString(filePath: str, text: str, needXmlHeader:bool = True):
+def generateOutputFileFromString(filePath: str, text: str, needXmlHeader:bool = True):
     if needXmlHeader and not text.strip().startswith("<?xml"):
         text = '<?xml version="1.0" encoding="utf-8"?>\n'+text.strip()
     file = open(filePath, "w", encoding="utf-8")

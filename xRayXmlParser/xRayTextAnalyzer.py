@@ -1,3 +1,4 @@
+from cmath import e
 import re
 from typing import Any, Dict, List, Tuple
 from .entityDefinition import *
@@ -69,12 +70,53 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
 
 
 def getScriptPotentialTexts(text: str) -> set[str]:
-    inStrQuotePtn = re.compile(r'(?<!\\)\\"')
-    text = inStrQuotePtn.sub("'", text)
-    textPa = '"[\''+rusLettersString+r' @№\$%«»,-.!:?_a-zA-Z0-9\[\]\(\)\\]*"'
-    scptn = re.compile(textPa)
-    res = scptn.findall(text)
-    return set(res)
+    res = set()
+
+    lines = text.split("\n")
+
+    for line in lines:
+        isOpen = False
+        onGoing = ''
+        isEscape = False
+        for i in range(len(line)):
+            if line[i] == '"':
+                if not isOpen:
+                    onGoing = '"'
+                    isOpen = True
+                    continue
+
+                # now open
+                if isEscape:
+                    onGoing = onGoing + '"'
+                    isEscape = False
+                else:
+                    onGoing = onGoing + line[i]
+                    isOpen = False
+                    res.add(onGoing)
+
+                continue
+
+            if isOpen:
+                if '\\' == line[i]:
+                    if isEscape:
+                        onGoing = onGoing + '\\'
+                        isEscape = False
+                    else:
+                        isEscape = True
+                elif 'n' == line[i]:
+                    if isEscape:
+                        onGoing = onGoing + '\n'
+                        isEscape = False
+                    else:
+                        onGoing = onGoing + 'n'
+                else:
+                    onGoing = onGoing + line[i]
+
+    return res
+
+
+def escapeLiteralText(text: str) -> str:
+    return text.replace("\\", '\\\\').replace("\n", '\\n').replace('"', '\\"')
 
 
 def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
