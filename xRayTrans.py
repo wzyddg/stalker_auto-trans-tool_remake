@@ -250,7 +250,7 @@ Options:
                     if cand in reuseTexts:
                         print('!', end='')
                         continue
-                    if xRayXmlParser.doesTextLookLikeId(cand):
+                    if xRayXmlParser.doesTextLookLikeId(cand) or xRayXmlParser.doesTextLookLikeScript(cand):
                         continue
                     # todo
                     transedStr = translateOneString(

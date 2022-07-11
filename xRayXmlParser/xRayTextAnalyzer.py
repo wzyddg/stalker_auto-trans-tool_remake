@@ -165,6 +165,16 @@ def doesTextLookLikeId(text: str) -> bool:
     return " " not in text
 
 
+def doesTextLookLikeScript(text: str) -> bool:
+    if len(rusLetCpl.findall(text)) > 0:
+        return False
+    if '=' in text or '@' in text:
+        return True
+    strangePtn = re.compile(":\d")
+    if len(strangePtn.findall(text)) > 0:
+        return True
+
+
 def cutText(text: str) -> List[Dict[str, str]]:
     seps = allSeparateTextCpl.findall(text)
     pieces = allSeparateTextCpl.split(text)
