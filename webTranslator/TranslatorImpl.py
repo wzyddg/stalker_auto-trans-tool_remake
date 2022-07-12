@@ -59,7 +59,7 @@ class TransmartQQTranslator(WebTranslator):
             except ConnectionError:
                 pass
 
-        if(timeit.default_timer()-self.lastRequest < self.eachRequestGap):
+        if timeit.default_timer()-self.lastRequest < self.eachRequestGap:
             sleep(self.eachRequestGap)
         body = {"header": {"fn": "auto_translation", "client_key": self.clientKey},
                 "type": "plain", "model_category": "normal", "source": {"lang": self.getApiLangCode(fromLang), "text_list": textList}, "target": {"lang": self.getApiLangCode(toLang)}}
@@ -117,7 +117,7 @@ class BaiduTranslator(WebTranslator):
             fromLang = self.detectLang(text)
 
         # only sleep if really gonna call api
-        if(timeit.default_timer()-self.lastRequest < self.eachRequestGap):
+        if timeit.default_timer()-self.lastRequest < self.eachRequestGap:
             sleep(self.eachRequestGap)
         params = {
             "from": self.getApiLangCode(fromLang),
@@ -288,7 +288,7 @@ class DeepLTranslator(WebTranslator):
         # if this goes wrong means this engine wont do
         textPairs = self.analyzeTextByEngine(text, fromLang)
 
-        if(timeit.default_timer()-self.lastRequest < self.eachRequestGap):
+        if timeit.default_timer()-self.lastRequest < self.eachRequestGap:
             sleep(self.eachRequestGap)
 
         jobs = self.generateJobs(textPairs)

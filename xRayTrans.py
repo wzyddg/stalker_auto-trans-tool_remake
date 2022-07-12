@@ -44,7 +44,7 @@ def main(argv):
         if opt in ("-h", "--help"):
             helpText = """
 S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.
-Version 2.0.2, Updated at Jul 11th 2022
+Version 2.0.2, Updated at Jul 12th 2022
 by wzyddgFB from baidu S.T.A.L.K.E.R. tieba
 
 Options:
@@ -153,9 +153,9 @@ Options:
         nonlocal globalReqCount
         nonlocal globalTransChars
         for piece in pieces:
-            if(piece["needTrans"]):
+            if piece["needTrans"]:
                 langCode = fl
-                if(langCode == 'text'):
+                if langCode == 'text':
                     langCode = sourceLangForTextTag
                 if langCode == targetLang:
                     piece["translated"] = piece["content"]
@@ -256,10 +256,11 @@ Options:
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
 
-                    if "script_text_all_in" in extract:
-                        extract["script_text_all_in"] = extract["script_text_all_in"]+transedStr
-                    else:
-                        extract["script_text_all_in"] = transedStr
+                    if "script_text_all_in" not in extract:
+                        extract["script_text_all_in"] = set()
+
+                    for char in transedStr:
+                        extract["script_text_all_in"].add(char)
 
                     # escape back
                     repDict['"'+xRayXmlParser.escapeLiteralText(
@@ -274,7 +275,7 @@ Options:
             print("\n"+fullPath+" is not a file or already existed.")
     if transFunction in ['gameplay', 'script']:
         xRayXmlParser.generateOutputXml(os.path.join(
-            textDir, "translated_"+engine, transFunction+"__put_this_to_text_folder.xml"), extract)
+            textDir, "translated_"+engine, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " +
           os.path.join(textDir, "translated_"+engine))

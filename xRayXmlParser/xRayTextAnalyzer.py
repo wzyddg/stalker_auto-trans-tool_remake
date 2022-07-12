@@ -193,7 +193,7 @@ def cutText(text: str) -> List[Dict[str, str]]:
                 "needTrans": False,
                 "content": pieces[i]
             })
-        if(i < len(seps)):
+        if i < len(seps):
             # cleaning for $$ACTION_XX$$
             washed = re.sub(r"(?<=\$\$)[\s]*(?=[_a-zA-Z0-9])", "", seps[i])
             washed = re.sub(r"(?<=[_a-zA-Z0-9])[\s]*(?=\$\$)", "", washed)
