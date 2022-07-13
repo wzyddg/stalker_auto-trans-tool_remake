@@ -228,6 +228,7 @@ Options:
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
                     repDict[cand] = transedStr
+                repdText = wholeText
                 if len(repDict) > 0:
                     for key in repDict:
                         extKey = textIdPrefix+str(totalGenerateCount)
@@ -237,8 +238,8 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                    xRayXmlParser.generateOutputFileFromString(os.path.join(
-                        textDir, "translated_"+engine, xRFile), repdText)
+                xRayXmlParser.generateOutputFileFromString(os.path.join(
+                    textDir, "translated_"+engine, xRFile), repdText)
                 print("")
 
             elif transFunction == 'script':
@@ -265,11 +266,12 @@ Options:
                     # escape back
                     repDict['"'+xRayXmlParser.escapeLiteralText(
                         cand)+'"'] = '"'+xRayXmlParser.escapeLiteralText(transedStr)+'"'
+                repdText = wholeText
                 if len(repDict) > 0:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                    xRayXmlParser.generateOutputFileFromString(os.path.join(
-                        textDir, "translated_"+engine, xRFile), repdText, needXmlHeader=False)
+                xRayXmlParser.generateOutputFileFromString(os.path.join(
+                    textDir, "translated_"+engine, xRFile), repdText, needXmlHeader=False)
                 print("")
         else:
             print("\n"+fullPath+" is not a file or already existed.")

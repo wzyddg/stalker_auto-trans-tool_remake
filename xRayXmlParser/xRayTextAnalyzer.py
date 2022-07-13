@@ -22,6 +22,8 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
+executePtn = re.compile(":exec")
+
 
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
     blackList = []
@@ -75,6 +77,12 @@ def getScriptPotentialTexts(text: str) -> set[str]:
     lines = text.split("\n")
 
     for line in lines:
+        # some pre filter
+        if line.strip().lower().startswith("console"):
+            continue
+        if len(executePtn.findall(line)) > 0:
+            continue
+
         isOpen = False
         onGoing = ''
         isEscape = False
