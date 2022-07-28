@@ -22,7 +22,7 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
-executePtn = re.compile(":exec")
+sensitivePtn = re.compile(r"(:|\.)(exec|write|script|set|open)")
 
 
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
@@ -68,7 +68,13 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
-    return set(res)
+    hintptn = re.compile(r'hint=((?:"[^"]*")|'+r"(?:'[^']*'))")
+    res2 = hintptn.findall(text)
+    res3 = []
+    for hint in res2:
+        if len(hint) > 2:
+            res3.append(hint[1:-1])
+    return set(res+res3)
 
 
 def getScriptPotentialTexts(text: str) -> set[str]:
@@ -80,7 +86,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
         # some pre filter
         if line.strip().lower().startswith("console"):
             continue
-        if len(executePtn.findall(line)) > 0:
+        if len(sensitivePtn.findall(line)) > 0:
             continue
 
         isOpen = False
