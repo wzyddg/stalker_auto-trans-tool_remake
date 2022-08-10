@@ -77,6 +77,19 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
     return set(res+res3)
 
 
+def splitTextToPiecesAtLength(text: str, pieLen: int) -> list[str]:
+    if len(text) == 0:
+        return [""]
+
+    res = []
+    for i in range(int(len(text)/pieLen)):
+        res.append(text[i*pieLen:(i+1)*pieLen])
+
+    res.append(text[int(len(text)/pieLen)*pieLen:len(text)])
+
+    return res
+
+
 def getScriptPotentialTexts(text: str) -> set[str]:
     res = set()
 

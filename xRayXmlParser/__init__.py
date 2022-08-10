@@ -30,5 +30,6 @@ __all__ = [
     "escapeLiteralText",
     "generateOutputFileFromString",
     "replaceFromText",
+    "splitTextToPiecesAtLength",
     "allSeparateTextCpl"
 ]
