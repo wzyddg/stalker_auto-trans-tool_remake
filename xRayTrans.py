@@ -185,7 +185,11 @@ Options:
     textIdPrefix = "sgtat_auto_generate_text_"+str(int(time()))+"_"
     totalGenerateCount = 0
     extract = {}
-    for xRFile in lst:
+
+    # for xRFile in lst:
+    i = 0
+    while i < len(lst):
+        xRFile = lst[i]
         fullPath = os.path.join(textDir, xRFile)
         if os.path.isfile(fullPath) and xRFile not in doneFileLst:
             print("\n\n"+xRFile+":")
@@ -211,7 +215,7 @@ Options:
                     doneHere[entity.id] = transedStr
 
                 xRayXmlParser.generateOutputXml(
-                    os.path.join(textDir, "translated_"+engine, xRFile), doneHere)
+                    os.path.join(doneDir, xRFile), doneHere)
                 print("")
 
             elif transFunction == 'gameplay':
@@ -238,8 +242,8 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                xRayXmlParser.generateOutputFileFromString(os.path.join(
-                    textDir, "translated_"+engine, xRFile), repdText)
+                xRayXmlParser.generateOutputFileFromString(
+                    os.path.join(doneDir, xRFile), repdText)
                 print("")
 
             elif transFunction == 'script':
@@ -271,10 +275,31 @@ Options:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
                 xRayXmlParser.generateOutputFileFromString(os.path.join(
-                    textDir, "translated_"+engine, xRFile), repdText, needXmlHeader=False)
+                    doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
+
+            elif transFunction == 'ltx':
+                wholeText, candidates = xRayXmlParser.parse_xray_script_xml(
+                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
+                xRayXmlParser.generateOutputFileFromString(os.path.join(
+                    doneDir, xRFile), wholeText, needXmlHeader=False)
+                print("")
+
+        elif os.path.isdir(fullPath) and transFunction == 'ltx':
+            if not xRFile == "translated_"+engine:
+                subs = os.listdir(fullPath)
+                for sub in subs:
+                    subPath = os.path.join(xRFile, sub)
+                    lst.append(subPath)
+                    nextDoneDir = os.path.join(doneDir, xRFile)
+                    if not os.path.exists(nextDoneDir):
+                        os.mkdir(nextDoneDir)
+
         else:
             print("\n"+fullPath+" is not a file or already existed.")
+
+        # end one round
+        i = i+1
 
     if transFunction in ['script', 'ltx'] and "chars_all_in" in extract:
         pie = xRayXmlParser.splitTextToPiecesAtLength(
@@ -286,11 +311,10 @@ Options:
 
     if transFunction in ['gameplay', 'script', 'ltx']:
         xRayXmlParser.generateOutputXml(os.path.join(
-            textDir, "translated_"+engine, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
+            doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
-    print("translated files are located at " +
-          os.path.join(textDir, "translated_"+engine))
+    print("translated files are located at " + doneDir)
     print("total request:"+str(globalReqCount))
     print("total char:"+str(globalTransChars))
     print("these ids are redundant, please check manually:")
