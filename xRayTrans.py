@@ -259,6 +259,8 @@ Options:
                         continue
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
+                    if len(cand) > 1 and cand.startswith('"') and cand.endswith('"'):
+                        cand = cand[1:-1]
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
                     repDict[cand] = transedStr

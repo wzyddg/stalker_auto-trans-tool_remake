@@ -99,10 +99,7 @@ def getLtxPotentialTexts(text: str) -> set[str]:
         if len(pieces) < 2:
             continue
         if "description" in pieces[0] or pieces[0].startswith("inv_name"):
-            thisText = "=".join(pieces[1:]).strip()
-            if len(thisText) > 1 and thisText.startswith('"') and thisText.endswith('"'):
-                thisText = thisText[1:-1]
-            res.add(thisText)
+            res.add("=".join(pieces[1:]).strip())
 
     return res
 
