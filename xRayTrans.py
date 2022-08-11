@@ -272,8 +272,8 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                xRayXmlParser.generateOutputFileFromString(
-                    os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
+                    xRayXmlParser.generateOutputFileFromString(
+                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
             elif transFunction == 'script':
