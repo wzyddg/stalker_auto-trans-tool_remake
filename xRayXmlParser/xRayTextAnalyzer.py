@@ -85,8 +85,23 @@ def splitTextToPiecesAtLength(text: str, pieLen: int) -> list[str]:
     for i in range(int(len(text)/pieLen)):
         res.append(text[i*pieLen:(i+1)*pieLen])
 
-    res.append(text[int(len(text)/pieLen)*pieLen:len(text)])
+    res.append(text[int(len(text)/pieLen)*pieLen:])
 
+    return res
+
+
+def getLtxPotentialTexts(text: str) -> set[str]:
+    res = set()
+    lines = text.split("\n")
+
+    for line in lines:
+        line = re.sub(';[\s\S]*', '', line).strip()
+        pieces = line.split("=")
+        if len(pieces) < 2:
+            continue
+        if "description" in pieces[0] or "_name" in pieces[0]:
+            res.add("=".join(pieces[1:]).strip())
+            
     return res
 
 

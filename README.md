@@ -23,5 +23,5 @@ Options:
                                                 won't do translation.  
   --forceTransFiles=&lt;value&gt;                 (Optional)files that ignore reuse.  
                                                 concat with ','. eg: a.xml,b.xml  
-  --function=&lt;value&gt;                        (Optional)translating function.  
-                                                default text. eg: text gameplay script  
+  --function=&lt;value&gt;                        (Optional)translating function. default text. eg: text gameplay script.  
+                                                when ltx, program will recursively translate all ltx files.  

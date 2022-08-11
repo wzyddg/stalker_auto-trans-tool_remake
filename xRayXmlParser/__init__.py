@@ -13,6 +13,8 @@ from .xmlFileGenerator import *
 __all__ = [
     "parse_xray_text_xml",
     "parse_xray_gameplay_xml",
+    "parse_xray_ltx_file",
+    "parse_xray_script_file",
     "generateOutputXml",
     "TextEntity",
     "rusLettersString",

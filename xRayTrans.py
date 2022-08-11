@@ -68,8 +68,8 @@ Options:
                                                 won't do translation.
   --forceTransFiles=<value>                 (Optional)files that ignore reuse.
                                                 concat with ','. eg: a.xml,b.xml
-  --function=<value>                        (Optional)translating function.
-                                                default text. eg: text gameplay script
+  --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
+                                                when ltx, program will recursively translate all ltx files.
         """
             print(helpText)
             sys.exit()
@@ -228,7 +228,6 @@ Options:
                         continue
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
-                    # todo
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
                     repDict[cand] = transedStr
@@ -243,11 +242,38 @@ Options:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
                 xRayXmlParser.generateOutputFileFromString(
-                    os.path.join(doneDir, xRFile), repdText)
+                    os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
+                print("")
+
+            elif transFunction == 'ltx':
+                wholeText, candidates = xRayXmlParser.parse_xray_ltx_file(
+                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
+                repDict = {}
+                for cand in candidates:
+                    if cand in reuseTexts:
+                        print('!', end='')
+                        continue
+                    if xRayXmlParser.doesTextLookLikeId(cand):
+                        continue
+                    transedStr = translateOneString(
+                        cand, globalTranslator.autoLangCode)
+                    repDict[cand] = transedStr
+                repdText = wholeText
+                if len(repDict) > 0:
+                    for key in repDict:
+                        extKey = textIdPrefix+str(totalGenerateCount)
+                        totalGenerateCount = totalGenerateCount+1
+                        extract[extKey] = repDict[key]
+                        repDict[key] = extKey
+
+                    repdText = xRayXmlParser.replaceFromText(
+                        wholeText, repDict)
+                xRayXmlParser.generateOutputFileFromString(
+                    os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
             elif transFunction == 'script':
-                wholeText, candidates = xRayXmlParser.parse_xray_script_xml(
+                wholeText, candidates = xRayXmlParser.parse_xray_script_file(
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 repDict = {}
                 for candWithQuote in candidates:
@@ -257,7 +283,6 @@ Options:
                         continue
                     if xRayXmlParser.doesTextLookLikeId(cand) or xRayXmlParser.doesTextLookLikeScript(cand):
                         continue
-                    # todo
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
 
@@ -276,13 +301,6 @@ Options:
                         wholeText, repDict)
                 xRayXmlParser.generateOutputFileFromString(os.path.join(
                     doneDir, xRFile), repdText, needXmlHeader=False)
-                print("")
-
-            elif transFunction == 'ltx':
-                wholeText, candidates = xRayXmlParser.parse_xray_script_xml(
-                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
-                xRayXmlParser.generateOutputFileFromString(os.path.join(
-                    doneDir, xRFile), wholeText, needXmlHeader=False)
                 print("")
 
         elif os.path.isdir(fullPath) and transFunction == 'ltx':

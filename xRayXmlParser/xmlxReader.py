@@ -82,7 +82,7 @@ def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1
 
     return (wholeText, guys)
 
-def parse_xray_script_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
+def parse_xray_script_file(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
     for encoding in candidateEncodings:
         try:
             f = open(filePath, "r", encoding=encoding)
@@ -97,5 +97,23 @@ def parse_xray_script_xml(filePath: str, candidateEncodings: List[str] = ["cp125
             break
 
     guys = getScriptPotentialTexts(wholeText)
+
+    return (wholeText, guys)
+
+def parse_xray_ltx_file(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
+    for encoding in candidateEncodings:
+        try:
+            f = open(filePath, "r", encoding=encoding)
+            wholeText = f.read()
+        except UnicodeDecodeError:
+            f.close()
+            print(" ├──" + filePath + " is not encoded with "+encoding)
+            continue
+        else:
+            f.close()
+            print(" ├──" + filePath + " successfully decoded with "+encoding)
+            break
+
+    guys = getLtxPotentialTexts(wholeText)
 
     return (wholeText, guys)
