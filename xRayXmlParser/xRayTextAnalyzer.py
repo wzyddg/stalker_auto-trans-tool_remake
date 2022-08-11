@@ -172,6 +172,8 @@ def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
 
 
 def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool = True) -> str:
+    if needFixST:
+        deleteHeader = True
     replaced = re.sub('&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub('&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(
@@ -182,7 +184,9 @@ def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool
         replaced = re.sub('<\?xml[^>]+encoding=[^>]+\?>', '', replaced)
 
     # convert < in xml
-    replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced)
+    replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced).strip()
+    if replaced.startswith("&lt;?xml"):
+        replaced = "<"+replaced[4:]
 
     if needFixST:
         if not replaced.strip().startswith("<string_table>"):
