@@ -1,4 +1,3 @@
-from cmath import e
 import re
 from typing import Any, Dict, List, Tuple
 from .entityDefinition import *
@@ -100,7 +99,10 @@ def getLtxPotentialTexts(text: str) -> set[str]:
         if len(pieces) < 2:
             continue
         if "description" in pieces[0] or pieces[0].startswith("inv_name"):
-            res.add("=".join(pieces[1:]).strip())
+            thisText = "=".join(pieces[1:]).strip()
+            if len(thisText) > 1 and thisText.startswith('"') and thisText.endswith('"'):
+                thisText = thisText[1:-1]
+            res.add(thisText)
 
     return res
 

@@ -308,7 +308,7 @@ Options:
                 print("")
 
         elif os.path.isdir(fullPath) and transFunction == 'ltx':
-            if not xRFile == "translated_"+engine:
+            if not xRFile == "translated_"+engine and not xRFile.endswith(".git"):
                 subs = os.listdir(fullPath)
                 for sub in subs:
                     subPath = os.path.join(xRFile, sub)
