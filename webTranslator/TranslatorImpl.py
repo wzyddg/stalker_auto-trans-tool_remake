@@ -135,12 +135,13 @@ class BaiduTranslator(WebTranslator):
         try:
             res = resJson["trans_result"][0]["dst"]
         except KeyError as err:
-            if resJson["error_code"] == '52001':
+            if resJson["error_code"] == '52001' and not isRetry:
                 print("(timed out, wait " + str(self.timedOutGap) + "s and try again)")
                 sleep(self.timedOutGap)
-                return self.doTranslate(text, fromLang, toLang)
+                return self.doTranslate(text, fromLang, toLang, isRetry=True)
             else:
-                raise err
+                print("(can't translate, return original string)")
+                return text
         return res
 
     def getApiLangCode(self, textLang: str) -> str:

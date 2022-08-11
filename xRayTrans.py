@@ -246,6 +246,10 @@ Options:
                 print("")
 
             elif transFunction == 'ltx':
+                pathSteps = xRFile.split(os.path.sep)
+                if pathSteps[-1].lower().count(".ltx") < 1:
+                    i = i+1
+                    continue
                 wholeText, candidates = xRayXmlParser.parse_xray_ltx_file(
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 repDict = {}

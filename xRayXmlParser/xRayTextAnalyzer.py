@@ -101,7 +101,7 @@ def getLtxPotentialTexts(text: str) -> set[str]:
             continue
         if "description" in pieces[0] or "_name" in pieces[0]:
             res.add("=".join(pieces[1:]).strip())
-            
+
     return res
 
 
@@ -169,13 +169,15 @@ def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
     return text
 
 
-def normalize_xml_string(xmlStr: str, needFixST: bool = True) -> str:
+def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool = True) -> str:
     replaced = re.sub('&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub('&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(
         '&(?!ensp;|emsp;|nbsp;|lt;|gt;|amp;|quot;|copy;|reg;|trade;|times;|divide;)', '&amp;', replaced)
-    replaced = re.sub('<\?xml[^>]+encoding=[^>]+\?>', '', replaced)
     replaced = re.sub('<!--[\s\S]*?-->', '', replaced)
+
+    if deleteHeader:
+        replaced = re.sub('<\?xml[^>]+encoding=[^>]+\?>', '', replaced)
 
     # convert < in xml
     replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced)
