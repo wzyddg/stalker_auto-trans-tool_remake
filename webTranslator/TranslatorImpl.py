@@ -92,6 +92,7 @@ class TransmartQQTranslator(WebTranslator):
                     print("(can't translate, return original string)")
                     return text
             else:
+                print(str(resJson))
                 raise KeyError
         return res
 
