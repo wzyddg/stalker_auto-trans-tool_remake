@@ -259,10 +259,14 @@ Options:
                         continue
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
-                    if len(cand) > 1 and cand.startswith('"') and cand.endswith('"'):
-                        cand = cand[1:-1]
+                    candSend = cand
+                    isQuoted = len(cand) > 1 and cand.startswith('"') and cand.endswith('"')
+                    if isQuoted:
+                        candSend = cand[1:-1]
                     transedStr = translateOneString(
-                        cand, globalTranslator.autoLangCode)
+                        candSend, globalTranslator.autoLangCode)
+                    if isQuoted:
+                        transedStr = '"'+transedStr+'"'
                     repDict[cand] = transedStr
                 repdText = wholeText
                 if len(repDict) > 0:
@@ -279,6 +283,10 @@ Options:
                 print("")
 
             elif transFunction == 'script':
+                pathSteps = xRFile.split(os.path.sep)
+                if pathSteps[-1].lower().count(".script") < 1:
+                    i = i+1
+                    continue
                 wholeText, candidates = xRayXmlParser.parse_xray_script_file(
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 repDict = {}
@@ -309,7 +317,7 @@ Options:
                     doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
-        elif os.path.isdir(fullPath) and transFunction == 'ltx':
+        elif os.path.isdir(fullPath) and transFunction in ['ltx', 'script']:
             if not xRFile == "translated_"+engine and not xRFile.endswith(".git"):
                 subs = os.listdir(fullPath)
                 for sub in subs:
