@@ -111,6 +111,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
 
     for line in lines:
         # some pre filter
+        line = re.sub(r'--[\s\S]*$', '', line)
         normLine = line.strip().lower()
         if normLine.startswith("console") or normLine.startswith("cmd"):
             continue
