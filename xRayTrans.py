@@ -124,7 +124,6 @@ Options:
     doneDir = os.path.join(textDir, "translated_"+engine)
     if not os.path.exists(doneDir):
         os.mkdir(doneDir)
-    doneFileLst = os.listdir(doneDir)
 
     # reuse translated texts
     reuseTexts = {}
@@ -191,7 +190,7 @@ Options:
     while i < len(lst):
         xRFile = lst[i]
         fullPath = os.path.join(textDir, xRFile)
-        if os.path.isfile(fullPath) and xRFile not in doneFileLst:
+        if os.path.isfile(fullPath) and not os.path.exists(os.path.join(doneDir, xRFile)):
             print("\n\n"+xRFile+":")
 
             if transFunction == 'text':
