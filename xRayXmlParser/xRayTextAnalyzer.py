@@ -21,8 +21,9 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
-sensitivePtn = re.compile(
-    r"(exec|write|load|script|call|set|open|console|cmd|return)")
+scriptLineSensitivePtn = re.compile(
+    r"(exec|write|load|script|call|set|open|sound|effect|abort|print|console|cmd|return)")
+scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
 
 
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
@@ -68,7 +69,7 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
-    hintptn = re.compile(r'hint=((?:"[^"]*")|'+r"(?:'[^']*'))")
+    hintptn = re.compile(r'(?:hint|name)=((?:"[^"]*")|'+r"(?:'[^']*'))")
     res2 = hintptn.findall(text)
     res3 = []
     for hint in res2:
@@ -112,14 +113,14 @@ def getScriptPotentialTexts(text: str) -> set[str]:
 
     for line in lines:
         # some pre filter
-        line = re.sub(r'--[\s\S]*$', '', line)
-        normLine = line.strip().lower()
-        if len(rusLetCpl.findall(normLine)) < 0 and len(sensitivePtn.findall(normLine)) > 0:
-            continue
+        line = re.sub(r'--[\s\S]*$', '', line).strip()
 
         isOpen = False
         onGoing = ''
         isEscape = False
+
+        lineSet = set()
+
         for i in range(len(line)):
             if line[i] == '"':
                 if not isOpen:
@@ -134,7 +135,11 @@ def getScriptPotentialTexts(text: str) -> set[str]:
                 else:
                     onGoing = onGoing + line[i]
                     isOpen = False
-                    res.add(onGoing)
+                    # res.add(onGoing)
+
+                    # match check
+                    if(len(scriptMatchSensitivePtn.findall(onGoing)) == 0):
+                        lineSet.add(onGoing)
 
                 continue
 
@@ -153,6 +158,18 @@ def getScriptPotentialTexts(text: str) -> set[str]:
                         onGoing = onGoing + 'n'
                 else:
                     onGoing = onGoing + line[i]
+
+        # post line check
+        sortedLM = list(lineSet)
+        sortedLM.sort(key=lambda x: len(x), reverse=True)
+        sacLine = line
+        for lm in sortedLM:
+            sacLine = sacLine.replace(lm, "")
+        normLine = sacLine.lower()
+        if len(scriptLineSensitivePtn.findall(normLine)) > 0:
+            continue
+        else:
+            res = set(sortedLM+list(res))
 
     return res
 
