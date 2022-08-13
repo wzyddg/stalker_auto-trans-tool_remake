@@ -36,9 +36,10 @@ def main(argv):
     runnableCheck = False
     forceTrans = []
     transFunction = 'text'
+    outputWhenEmpty = False
 
-    opts, args = getopt.getopt(argv[1:], "che:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "help", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function="])
+    opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:r:", [
+                               "runnableCheck", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function="])
     print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -66,6 +67,8 @@ Options:
                                                 for gameplay translating text id protecting or text translating accelerating, always quote with ""
   -c        |--runnableCheck                (Optional)just analyze files.
                                                 won't do translation.
+  -o        |--outputWhenEmpty              (Optional)generate output file even this file has nothing translated.
+                                                for gameplay/script/ltx, for solving #include encoding problem.
   --forceTransFiles=<value>                 (Optional)files that ignore reuse.
                                                 concat with ','. eg: a.xml,b.xml
   --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
@@ -87,6 +90,8 @@ Options:
             sourceLangForTextTag = arg
         elif opt in ("-t", "--toLang"):
             targetLang = arg
+        elif opt in ("-o", "--outputWhenEmpty"):
+            outputWhenEmpty = True
         elif opt in ("-a", "--analyzeCharCount"):
             analyzeCharCount = int(arg)
         elif opt in ("-r", "--reusePath"):
@@ -240,8 +245,10 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                xRayXmlParser.generateOutputFileFromString(
-                    os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
+
+                if len(repDict) > 0 or outputWhenEmpty:
+                    xRayXmlParser.generateOutputFileFromString(
+                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
             elif transFunction == 'ltx':
@@ -259,7 +266,8 @@ Options:
                     if xRayXmlParser.doesTextLookLikeId(cand):
                         continue
                     candSend = cand
-                    isQuoted = len(cand) > 1 and cand.startswith('"') and cand.endswith('"')
+                    isQuoted = len(cand) > 1 and cand.startswith(
+                        '"') and cand.endswith('"')
                     if isQuoted:
                         candSend = cand[1:-1]
                     transedStr = translateOneString(
@@ -277,6 +285,8 @@ Options:
 
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
+
+                if len(repDict) > 0 or outputWhenEmpty:
                     xRayXmlParser.generateOutputFileFromString(
                         os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
@@ -312,11 +322,13 @@ Options:
                 if len(repDict) > 0:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
-                xRayXmlParser.generateOutputFileFromString(os.path.join(
-                    doneDir, xRFile), repdText, needXmlHeader=False)
+
+                if len(repDict) > 0 or outputWhenEmpty:
+                    xRayXmlParser.generateOutputFileFromString(os.path.join(
+                        doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
-        elif os.path.isdir(fullPath) and transFunction in ['ltx', 'script']:
+        elif os.path.isdir(fullPath) and transFunction in ['ltx', 'script', 'gameplay']:
             if not xRFile == "translated_"+engine and not xRFile.endswith(".git"):
                 subs = os.listdir(fullPath)
                 for sub in subs:

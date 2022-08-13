@@ -28,6 +28,6 @@ class WebTranslator(ABC):
             return "eng"
 
     def __init__(self):
-        self.timedOutGap = 5
+        self.timedOutGap = 10
         self.eachRequestGap = 1
         self.lastRequest = 0

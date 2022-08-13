@@ -79,7 +79,7 @@ class TransmartQQTranslator(WebTranslator):
             for txt in resJson["auto_translation"]:
                 res = res + txt
         else:
-            if resJson["header"]["ret_code"] == 'error' and "timed out" in resJson['message']:
+            if resJson["header"]["ret_code"] == 'error' and "timed out" in resJson['message'] or resJson["header"]["ret_code"] in ['busy']:
                 print("(timed out, wait " + str(self.timedOutGap) + "s and try again)")
                 sleep(self.timedOutGap)
                 # maybe set self.clientKey = "" here
@@ -92,8 +92,9 @@ class TransmartQQTranslator(WebTranslator):
                     print("(can't translate, return original string)")
                     return text
             else:
+                print("(can't translate, return original string)")
                 print(str(resJson))
-                raise KeyError
+                return text
         return res
 
 

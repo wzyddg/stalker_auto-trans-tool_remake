@@ -21,7 +21,8 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
-sensitivePtn = re.compile(r"(:|\.)(exec|write|script|set|open)")
+sensitivePtn = re.compile(
+    r"(exec|write|load|script|call|set|open|console|cmd|return)")
 
 
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
@@ -113,9 +114,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
         # some pre filter
         line = re.sub(r'--[\s\S]*$', '', line)
         normLine = line.strip().lower()
-        if normLine.startswith("console") or normLine.startswith("cmd"):
-            continue
-        if len(sensitivePtn.findall(line)) > 0:
+        if len(rusLetCpl.findall(normLine)) < 0 and len(sensitivePtn.findall(normLine)) > 0:
             continue
 
         isOpen = False
