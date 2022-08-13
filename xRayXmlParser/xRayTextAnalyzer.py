@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Tuple
 from .entityDefinition import *
 
 rusLettersString = "АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНнОоПпРрСсТтУуФфХхЦцЧчШшЩщъЫыьЭэЮюЯяЬ"
-actionPattern = "[()\"']?[\s]*\$\$[\s]*[Aa][Cc][Tt][_a-zA-Z0-9]*[\s]*\$\$[\s]*[()\"']?"
+actionPattern = r"[()\"']?[\s]*\$\$[\s]*[Aa][Cc][Tt][_a-zA-Z0-9]*[\s]*\$\$[\s]*[()\"']?"
 
 # add descriptor, actually not just placeholder, it's a placeholder detector, members' order matter in a group
-placeholderPattern = "%+(?:(?:[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+%+)|(?:[a-z](?:\[[a-z0-9,]*?\])?))[\s]*"
-scriptPlaceHolderPattern = "(?<!\$)\$[a-zA-Z0-9_" + \
+placeholderPattern = r"%+(?:(?:[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+%+)|(?:[.0-9]*[A-Za-z](?:\[[a-z0-9,]*?\])?))[\s]*"
+scriptPlaceHolderPattern = r"(?<!\$)\$[a-zA-Z0-9_" + \
     rusLettersString + "]+[ ,.!?\"]?"
 lineBreakPattern = r"(?:\n|\\n)+"
 allInOnePattern = '(?:' + actionPattern + ')|(?:' + placeholderPattern + \
