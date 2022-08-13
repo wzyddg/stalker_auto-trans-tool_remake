@@ -1,5 +1,5 @@
 S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.  
-Version 2.0.2, Updated at Aug 12th 2022  
+Version 2.0.2, Updated at Aug 13th 2022  
 by wzyddgFB from baidu S.T.A.L.K.E.R. tieba  
   
 Options:  
@@ -21,6 +21,8 @@ Options:
                                                 for gameplay translating text id protecting or text translating accelerating, always quote with ""  
   -c        |--runnableCheck                (Optional)just analyze files.  
                                                 won't do translation.  
+  -o        |--outputWhenEmpty              (Optional)generate output file even this file has nothing translated.  
+                                                for gameplay/script/ltx, for solving #include encoding problem.  
   --forceTransFiles=&lt;value&gt;                 (Optional)files that ignore reuse.  
                                                 concat with ','. eg: a.xml,b.xml  
   --function=&lt;value&gt;                        (Optional)translating function. default text. eg: text gameplay script.  
