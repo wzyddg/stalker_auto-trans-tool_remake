@@ -196,7 +196,7 @@ def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool
     replaced = re.sub('<!--[\s\S]*?-->', '', replaced)
 
     if deleteHeader:
-        replaced = re.sub('<\?xml[^>]+encoding=[^>]+\?>', '', replaced)
+        replaced = re.sub('<\?xml[^>]+encoding[=\s][^>]+\?>', '', replaced)
 
     # convert < in xml
     replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced).strip()
