@@ -62,7 +62,14 @@ def escapeXmlContentString(text: str) -> str:
     replaced = re.sub('"', '&quot;', replaced)
     replaced = re.sub("'", '&apos;', replaced)
     replaced = re.sub('<', '&lt;', replaced)
-    return replaced
+    return avoid_error_normalizer(replaced)
+
+
+def avoid_error_normalizer(text: str) -> str:
+    text = text.strip()
+    if len(text) == 0:
+        text = 'empty_string_avoid_error'
+    return text
 
 
 def getGameplayPotentialTexts(text: str) -> set[str]:
