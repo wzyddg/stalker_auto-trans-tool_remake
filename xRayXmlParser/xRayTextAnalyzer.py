@@ -196,17 +196,19 @@ def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
 def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool = True) -> str:
     if needFixST:
         deleteHeader = True
-    replaced = re.sub('&[\s]+amp;', '&amp;', xmlStr)
-    replaced = re.sub('&[\s]+lt;', '&lt;', replaced)
+    while not xmlStr.startswith("<"):
+        xmlStr = xmlStr[1:]
+    replaced = re.sub(r'&[\s]+amp;', '&amp;', xmlStr)
+    replaced = re.sub(r'&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(
         '&(?!ensp;|emsp;|nbsp;|lt;|gt;|amp;|quot;|copy;|reg;|trade;|times;|divide;)', '&amp;', replaced)
-    replaced = re.sub('<!--[\s\S]*?-->', '', replaced)
+    replaced = re.sub(r'<!--[\s\S]*?-->', '', replaced)
 
     if deleteHeader:
-        replaced = re.sub('<\?xml[^>]+encoding[=\s][^>]+\?>', '', replaced)
+        replaced = re.sub(r'<\?xml[^>]+encoding[=\s][^>]+\?>', '', replaced)
 
-    # convert < in xml
-    replaced = re.sub('<(?![a-zA-Z/])', '&lt;', replaced).strip()
+    # convert < in xml, but not tag
+    replaced = re.sub('<(?![A-Z_a-z\\u00C0-\\u00D6\\u00D8-\\u00F6\\u00F8-\\u02FF\\u0370-\\u037D\\u037F-\\u1FFF\\u200C-\\u200D\\u2070-\\u218F\\u2C00-\\u2FEF\\u3001-\\uD7FF\\uF900-\\uFDCF\\uFDF0-\\uFFFD\\u10000-\\uEFFFF/])', '&lt;', replaced).strip()
     if replaced.startswith("&lt;?xml"):
         replaced = "<"+replaced[4:]
 
