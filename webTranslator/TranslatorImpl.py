@@ -19,10 +19,10 @@ class TransmartQQTranslator(WebTranslator):
         "rus": "ru"
     }
 
-    def __init__(self, needAnalyzeCharCount: int = 0):
+    def __init__(self, needAnalyzeCharCount: int = 0, userAgent: str = ""):
         super().__init__()
         print("\nTransmartQQTranslator only support chs/eng as output!")
-        self.clientKey = ""
+        self.getClientKey(userAgent)
         self.needAnalyzeCharCount = needAnalyzeCharCount
         self.analyzeApi = "https://transmart.qq.com/api/imt"
         self.mainTransApi = "https://transmart.qq.com/api/imt"
@@ -31,8 +31,10 @@ class TransmartQQTranslator(WebTranslator):
     def getApiLangCode(self, textLang: str) -> str:
         return TransmartQQTranslator.__langCodeMap[textLang]
 
-    def getClientKey(self):
-        ua = b'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
+    def getClientKey(self, userAgent: str = ""):
+        if len(userAgent.strip()) == 0:
+            userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36'
+        ua = bytes(userAgent, "utf-8")
         self.clientKey = base64.b64encode(ua).decode("utf-8")[0:100]
 
     def analyzeTextByEngine(self, text: str) -> list[str]:

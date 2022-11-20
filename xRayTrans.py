@@ -37,9 +37,10 @@ def main(argv):
     forceTrans = []
     transFunction = 'text'
     outputWhenEmpty = False
+    ua = ""
 
     opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function="])
+                               "runnableCheck", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function=", "ua="])
     print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -73,6 +74,7 @@ Options:
                                                 concat with ','. eg: a.xml,b.xml
   --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
                                                 when ltx, program will recursively translate all ltx files.
+  --ua=<value>                              (Optional)user agent from browser, use with qq engine to generate apikey, always quote with "".
         """
             print(helpText)
             sys.exit()
@@ -100,6 +102,8 @@ Options:
             forceTrans = arg.split(",")
         elif opt in ("--function"):
             transFunction = arg
+        elif opt in ("--ua"):
+            ua = arg
 
     # validation
     assert engine is not None, "engine must be provided."
@@ -112,7 +116,7 @@ Options:
 
     def getTranslator(e) -> webTranslator.WebTranslator:
         if e == 'qq':
-            return webTranslator.TransmartQQTranslator(analyzeCharCount)
+            return webTranslator.TransmartQQTranslator(analyzeCharCount, ua)
         elif e == 'deepl':
             return webTranslator.DeepLTranslator()
         elif e == 'baidu':
