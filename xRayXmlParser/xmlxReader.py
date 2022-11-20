@@ -64,9 +64,16 @@ def parse_xray_text_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"
 
 def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
     successEncoding = ""
-    for encoding in candidateEncodings:
+    for encodingIndex in range(len(candidateEncodings)):
+        encoding = candidateEncodings[encodingIndex]
         try:
-            f = open(filePath, "r", encoding=encoding)
+            # if last candidate, read any way
+            f = 1
+            if encodingIndex == len(candidateEncodings) - 1:
+                f = open(filePath, "r", encoding=encoding, errors="ignore")
+                print(" ├──" + filePath + " is forced decoded with "+encoding)
+            else:
+                f = open(filePath, "r", encoding=encoding)
             wholeText = f.read()
             successEncoding = encoding
         except UnicodeDecodeError:
@@ -75,7 +82,7 @@ def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1
             continue
         else:
             f.close()
-            print(" ├──" + filePath + " successfully decoded with "+encoding)
+            print(" ├──" + filePath + " is successfully decoded with "+encoding)
             break
 
     wholeText = normalize_xml_string(
@@ -106,10 +113,19 @@ def parse_xray_script_file(filePath: str, candidateEncodings: List[str] = ["cp12
 
 
 def parse_xray_ltx_file(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
-    for encoding in candidateEncodings:
+    successEncoding = ""
+    for encodingIndex in range(len(candidateEncodings)):
+        encoding = candidateEncodings[encodingIndex]
         try:
-            f = open(filePath, "r", encoding=encoding)
+            # if last candidate, read any way
+            f = 1
+            if encodingIndex == len(candidateEncodings) - 1:
+                f = open(filePath, "r", encoding=encoding, errors="ignore")
+                print(" ├──" + filePath + " is forced decoded with "+encoding)
+            else:
+                f = open(filePath, "r", encoding=encoding)
             wholeText = f.read()
+            successEncoding = encoding
         except UnicodeDecodeError:
             f.close()
             print(" ├──" + filePath + " is not encoded with "+encoding)
@@ -121,4 +137,4 @@ def parse_xray_ltx_file(filePath: str, candidateEncodings: List[str] = ["cp1251"
 
     guys = getLtxPotentialTexts(wholeText)
 
-    return (wholeText, guys)
+    return (wholeText, guys, successEncoding)

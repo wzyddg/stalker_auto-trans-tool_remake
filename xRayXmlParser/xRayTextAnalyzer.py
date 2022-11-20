@@ -196,8 +196,11 @@ def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
 def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool = True) -> str:
     if needFixST:
         deleteHeader = True
-    while not xmlStr.startswith("<"):
-        xmlStr = xmlStr[1:]
+
+#    poor detect, at least it should look like xml
+    if "</" in xmlStr:
+        while len(xmlStr) > 0 and not xmlStr.startswith("<"):
+            xmlStr = xmlStr[1:]
     replaced = re.sub(r'&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub(r'&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(

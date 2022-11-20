@@ -228,7 +228,7 @@ Options:
                     i = i+1
                     continue
                 wholeText, candidates, successEncoding = xRayXmlParser.parse_xray_gameplay_xml(
-                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
+                    fullPath, ['cp1251', 'cp1252', 'utf-8', 'cp1251'])
                 repDict = {}
                 for cand in candidates:
                     if cand in reuseTexts:
@@ -252,7 +252,7 @@ Options:
 
                 if len(repDict) > 0 or outputWhenEmpty:
                     xRayXmlParser.generateOutputFileFromString(
-                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
+                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False, encoding=successEncoding)
                 print("")
 
             elif transFunction == 'ltx':
@@ -260,8 +260,8 @@ Options:
                 if pathSteps[-1].lower().count(".ltx") < 1:
                     i = i+1
                     continue
-                wholeText, candidates = xRayXmlParser.parse_xray_ltx_file(
-                    fullPath, ['cp1251', 'cp1252', 'utf-8'])
+                wholeText, candidates, successEncoding = xRayXmlParser.parse_xray_ltx_file(
+                    fullPath, ['cp1251', 'cp1252', 'utf-8', "cp1251"])
                 repDict = {}
                 for cand in candidates:
                     if cand in reuseTexts:
@@ -292,7 +292,7 @@ Options:
 
                 if len(repDict) > 0 or outputWhenEmpty:
                     xRayXmlParser.generateOutputFileFromString(
-                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False)
+                        os.path.join(doneDir, xRFile), repdText, needXmlHeader=False, encoding=successEncoding)
                 print("")
 
             elif transFunction == 'script':
