@@ -82,7 +82,10 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
     for hint in res2:
         if len(hint) > 2:
             res3.append(hint[1:-1])
-    return set(res+res3)
+    for gpp in res:
+        if len(gpp.strip()) > 0:
+            res3.append(gpp.strip())
+    return set(res3)
 
 
 def splitTextToPiecesAtLength(text: str, pieLen: int) -> list[str]:
@@ -145,7 +148,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
                     # res.add(onGoing)
 
                     # match check
-                    if(len(scriptMatchSensitivePtn.findall(onGoing)) == 0):
+                    if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(onGoing[1:-1].strip()) > 0:
                         lineSet.add(onGoing)
 
                 continue
