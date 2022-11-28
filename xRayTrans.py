@@ -135,19 +135,33 @@ Options:
         os.mkdir(doneDir)
 
     # reuse translated texts
-    reuseTexts = {}
-    if reuseDir is not None:
-        reLst = os.listdir(reuseDir)
+    def readExistingText(exPath: str) -> dict[str, str]:
+        # if reuseDir is not None:
+        reLst = os.listdir(exPath)
+        reuseT = {}
         print("")
         for reFile in reLst:
-            reFullPath = os.path.join(reuseDir, reFile)
+            reFullPath = os.path.join(exPath, reFile)
             if os.path.isfile(reFullPath):
                 print("reading exiting translated file:"+reFile)
                 exEnts = xRayXmlParser.parse_xray_text_xml(
                     reFullPath, ['utf-8', 'cp1252', 'cp1251'])
                 for ent in exEnts:
-                    reuseTexts[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
+                    reuseT[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
                         1]
+        return reuseT
+
+    reuseTexts = {}
+    if reuseDir is not None:
+        reuseTexts = readExistingText(reuseDir)
+
+    if transFunction == 'text':
+        tempDir = os.path.join(doneDir, "__temp__")
+        if not os.path.exists(tempDir):
+            os.mkdir(tempDir)
+        tempTexts = readExistingText(tempDir)
+        for key in tempTexts:
+            reuseTexts[key] = tempTexts[key]
 
     globalReqCount = 0
     globalTransChars = 0
@@ -156,7 +170,7 @@ Options:
     pastIds = []
     redundantIds = []
 
-    def translateOneString(text: str, fl: str):
+    def translateOneString(text: str, fl: str) -> str:
         pieces = xRayXmlParser.cutText(text)
         nonlocal globalReqCount
         nonlocal globalTransChars

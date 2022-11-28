@@ -73,7 +73,13 @@ class TransmartQQTranslator(WebTranslator):
             sleep(self.timedOutGap)
             # maybe set self.clientKey = "" here
             return self.doTranslate(text, fromLang, toLang)
-        resJson = json.loads(response.text)
+
+        try:
+            resJson = json.loads(response.text)
+        except Exception:
+            # incomplete request, fake a busy
+            resJson = {"header": {"ret_code": "busy"}}
+
         self.lastRequest = timeit.default_timer()
         res = ""
         if resJson["header"]["ret_code"] == 'succ':
