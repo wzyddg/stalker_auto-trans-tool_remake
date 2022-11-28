@@ -221,6 +221,7 @@ Options:
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 print(" └──"+fullPath + " got " + str(len(texts)) + " texts!")
                 doneHere = dict()
+                tempClock = time()
                 for entity in texts:
                     if entity.id in pastIds and entity.id not in redundantIds:
                         redundantIds.append(entity.id)
@@ -235,6 +236,12 @@ Options:
                     chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
                     transedStr = translateOneString(chosen[1], chosen[0])
                     doneHere[entity.id] = transedStr
+
+                    # every 2 minutes generate a temp file
+                    if time() - tempClock > 120:
+                        xRayXmlParser.generateOutputXml(
+                            os.path.join(tempDir, xRFile), doneHere)
+                        tempClock = time()
 
                 xRayXmlParser.generateOutputXml(
                     os.path.join(doneDir, xRFile), doneHere)
