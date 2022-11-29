@@ -67,8 +67,9 @@ def escapeXmlContentString(text: str) -> str:
 
 def avoid_error_normalizer(text: str) -> str:
     text = text.strip()
+    # this is a non-space blank character, avoid error but still empty
     if len(text) == 0:
-        text = 'empty_string_avoid_error'
+        text = ' '
     return text
 
 

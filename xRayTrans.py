@@ -210,6 +210,8 @@ Options:
 
     # for xRFile in lst:
     i = 0
+    textLengthLimit = 996
+    undisplayableTexts = dict()
     while i < len(lst):
         xRFile = lst[i]
         fullPath = os.path.join(textDir, xRFile)
@@ -217,6 +219,7 @@ Options:
             print("\n\n"+xRFile+":")
 
             if transFunction == 'text':
+
                 texts = xRayXmlParser.parse_xray_text_xml(
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 print(" └──"+fullPath + " got " + str(len(texts)) + " texts!")
@@ -229,13 +232,24 @@ Options:
                         pastIds.append(entity.id)
                     print(entity.id, end='')
                     if entity.id in reuseTexts and xRFile not in forceTrans:
-                        doneHere[entity.id] = reuseTexts[entity.id]
+                        if len(reuseTexts[entity.id]) > textLengthLimit:
+                            undisplayableTexts[entity.id] = reuseTexts[entity.id]
+                            doneHere[entity.id] = '!_!_!_! Too long to load into game. see text with id "' + \
+                                entity.id+'" in undisplayable.txt'
+                        else:
+                            doneHere[entity.id] = reuseTexts[entity.id]
+                        # doneHere[entity.id] = reuseTexts[entity.id]
                         print('.', end='')
                         continue
 
                     chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
                     transedStr = translateOneString(chosen[1], chosen[0])
-                    doneHere[entity.id] = transedStr
+                    if len(transedStr) > textLengthLimit:
+                        undisplayableTexts[entity.id] = transedStr
+                        doneHere[entity.id] = '!_!_!_! Too long to load into game. see text with id "' + \
+                            entity.id+'" in undisplayable.txt'
+                    else:
+                        doneHere[entity.id] = transedStr
 
                     # every 2 minutes generate a temp file
                     if time() - tempClock > 120:
@@ -384,6 +398,10 @@ Options:
     if transFunction in ['gameplay', 'script', 'ltx']:
         xRayXmlParser.generateOutputXml(os.path.join(
             doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
+
+    if transFunction in ['text']:
+        xRayXmlParser.generateOutputXml(os.path.join(
+            doneDir, "__undisplayable.txt"), undisplayableTexts)
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " + doneDir)
