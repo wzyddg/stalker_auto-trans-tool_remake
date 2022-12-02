@@ -256,7 +256,7 @@ def doesTextLookLikeScript(text: str) -> bool:
         return True
 
 
-def cutText(text: str) -> List[Dict[str, str]]:
+def cutTextWithSeparator(text: str) -> List[Dict[str, str]]:
     seps = allSeparateTextCpl.findall(text)
     pieces = allSeparateTextCpl.split(text)
     assert len(pieces) == len(seps) + \

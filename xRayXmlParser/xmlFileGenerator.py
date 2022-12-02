@@ -9,8 +9,11 @@ def generateOutputXml(filePath: str, texts: Dict[str, str]):
             escapeXmlContentString(textId)+'">\n'
         if isinstance(texts[textId], set):
             texts[textId] = "".join(texts[textId])
+
+        # add break:\n every 1000 char so it can be loaded into game
         fileText = fileText+'\t\t<text>' + \
-            escapeXmlContentString(texts[textId])+'</text>\n'
+            '\n'.join(splitTextToPiecesAtLength(
+                escapeXmlContentString(texts[textId]), 1000))+'</text>\n'
         fileText = fileText+'\t</string>\n'
     fileText = fileText+'</string_table>\n'
     file = open(filePath, "w", encoding="utf-8")
