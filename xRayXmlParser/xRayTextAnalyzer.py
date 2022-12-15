@@ -21,6 +21,8 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
+# add guarantee safe here 
+scriptLinePermitPtn = re.compile(r"([Mm]essage|[Tt]ext(?!ure))")
 scriptLineSensitivePtn = re.compile(
     r"(exec|write|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
@@ -177,7 +179,9 @@ def getScriptPotentialTexts(text: str) -> set[str]:
         for lm in sortedLM:
             sacLine = sacLine.replace(lm, "")
         normLine = sacLine.lower()
-        if len(scriptLineSensitivePtn.findall(normLine)) > 0:
+        if len(scriptLinePermitPtn.findall(normLine)) > 0:
+            res = set(sortedLM+list(res))
+        elif len(scriptLineSensitivePtn.findall(normLine)) > 0:
             continue
         else:
             res = set(sortedLM+list(res))
