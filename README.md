@@ -27,3 +27,8 @@ Options:
                                                 concat with ','. eg: a.xml,b.xml  
   --function=&lt;value&gt;                        (Optional)translating function. default text. eg: text gameplay script.  
                                                 when ltx, program will recursively translate all ltx files.  
+
+
+
+package :
+pyinstaller -F .\xRayTrans.py -i .\4.ico

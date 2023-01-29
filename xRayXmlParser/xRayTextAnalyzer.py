@@ -22,7 +22,7 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
 # add guarantee safe here 
-scriptLinePermitPtn = re.compile(r"([Mm]essage|[Tt]ext(?!ure))")
+scriptLinePermitPtn = re.compile(r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
     r"(exec|write|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')

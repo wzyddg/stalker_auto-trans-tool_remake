@@ -4,6 +4,7 @@ import webTranslator
 import os
 import sys
 import getopt
+from zhconv import convert
 
 
 class Unbuffered(object):
@@ -37,10 +38,11 @@ def main(argv):
     forceTrans = []
     transFunction = 'text'
     outputWhenEmpty = False
+    convertToCHS = False
     ua = ""
 
     opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function=", "ua="])
+                               "runnableCheck", "convertToCHS", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function=", "ua="])
     print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -70,6 +72,8 @@ Options:
                                                 won't do translation.
   -o        |--outputWhenEmpty              (Optional)generate output file even this file has nothing translated.
                                                 for gameplay/script/ltx, for solving #include encoding problem.
+  --convertToCHS                            (Optional)convert Traditional Chinese
+                                                to Simplified Chinese.
   --forceTransFiles=<value>                 (Optional)files that ignore reuse.
                                                 concat with ','. eg: a.xml,b.xml
   --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
@@ -100,6 +104,8 @@ Options:
             reuseDir = arg
         elif opt in ("--forceTransFiles"):
             forceTrans = arg.split(",")
+        elif opt in ("--convertToCHS"):
+            convertToCHS = True
         elif opt in ("--function"):
             transFunction = arg
         elif opt in ("--ua"):
@@ -147,8 +153,10 @@ Options:
                 exEnts = xRayXmlParser.parse_xray_text_xml(
                     reFullPath, ['utf-8', 'cp1252', 'cp1251'])
                 for ent in exEnts:
-                    reuseT[ent.id] = xRayXmlParser.getRecommendLangText(ent, "chs")[
-                        1]
+                    thisRe = xRayXmlParser.getRecommendLangText(ent, "chs")[1]
+                    if convertToCHS:
+                        thisRe = convert(thisRe, 'zh-cn')
+                    reuseT[ent.id] = thisRe
         return reuseT
 
     reuseTexts = {}
