@@ -4,7 +4,7 @@ import webTranslator
 import os
 import sys
 import getopt
-from zhconv import convert
+import zhconv
 
 
 class Unbuffered(object):
@@ -106,6 +106,8 @@ Options:
             forceTrans = arg.split(",")
         elif opt in ("--convertToCHS"):
             convertToCHS = True
+            zhconv.loaddict(os.path.join(os.path.dirname(
+                __file__), "resources", "zhcdict.json"))
         elif opt in ("--function"):
             transFunction = arg
         elif opt in ("--ua"):
@@ -149,13 +151,13 @@ Options:
         for reFile in reLst:
             reFullPath = os.path.join(exPath, reFile)
             if os.path.isfile(reFullPath):
-                print("reading exiting translated file:"+reFile)
+                print("reading existing translated file:"+reFile)
                 exEnts = xRayXmlParser.parse_xray_text_xml(
                     reFullPath, ['utf-8', 'cp1252', 'cp1251'])
                 for ent in exEnts:
                     thisRe = xRayXmlParser.getRecommendLangText(ent, "chs")[1]
                     if convertToCHS:
-                        thisRe = convert(thisRe, 'zh-cn')
+                        thisRe = zhconv.convert(thisRe, 'zh-cn')
                     reuseT[ent.id] = thisRe
         return reuseT
 
@@ -194,8 +196,12 @@ Options:
                         transedPie = globalTranslator.doTranslate(
                             piece["content"], langCode, targetLang)
                         if transedPie == piece["content"] and benchPlayerTrans is not None:
-                            transedPie = benchPlayerTrans.doTranslate(
-                                piece["content"], langCode, targetLang)
+                            try:
+                                benchPie = benchPlayerTrans.doTranslate(
+                                    piece["content"], langCode, targetLang)
+                                transedPie = benchPie
+                            except:
+                                pass
                         piece["translated"] = transedPie
 
                     else:

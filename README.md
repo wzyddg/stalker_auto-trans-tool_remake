@@ -31,4 +31,4 @@ Options:
 
 
 package :
-pyinstaller -F .\xRayTrans.py -i .\4.ico
+pyinstaller -F .\xRayTrans.py -i .\4.ico --add-data="resources;resources"
