@@ -79,7 +79,7 @@ def getGameplayPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
-    hintptn = re.compile(r'(?:hint|name)=((?:"[^"]*")|'+r"(?:'[^']*'))")
+    hintptn = re.compile(r'(?:hint|name)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")
     res2 = hintptn.findall(text)
     res3 = []
     for hint in res2:
