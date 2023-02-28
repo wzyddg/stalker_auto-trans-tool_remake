@@ -343,6 +343,7 @@ Options:
                     fullPath, ['cp1251', 'cp1252', 'utf-8'])
                 repDict = {}
                 for candWithQuote in candidates:
+                    thisQuoteChar = candWithQuote[0]
                     cand = candWithQuote[1:-1]
                     if cand in reuseTexts:
                         print('!', end='')
@@ -359,8 +360,8 @@ Options:
                         extract["chars_all_in"].add(char)
 
                     # escape back
-                    repDict['"'+xRayXmlParser.escapeLiteralText(
-                        cand)+'"'] = '"'+xRayXmlParser.escapeLiteralText(transedStr)+'"'
+                    repDict[thisQuoteChar+xRayXmlParser.escapeLiteralText(
+                        cand, quote=thisQuoteChar)+thisQuoteChar] = thisQuoteChar+xRayXmlParser.escapeLiteralText(transedStr, quote=thisQuoteChar)+thisQuoteChar
                 repdText = wholeText
                 if len(repDict) > 0:
                     repdText = xRayXmlParser.replaceFromText(

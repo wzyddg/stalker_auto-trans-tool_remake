@@ -132,30 +132,37 @@ def getScriptPotentialTexts(text: str) -> set[str]:
         isOpen = False
         onGoing = ''
         isEscape = False
+        quoteChar = None
 
-        lineSet = set()
+        lineMatchSet = set()
 
         for i in range(len(line)):
-            if line[i] == '"':
-                if not isOpen:
-                    onGoing = '"'
-                    isOpen = True
+            # new start
+            if line[i] == '"' or line[i] == "'":
+                if line[i] == quoteChar or quoteChar is None:
+                    if not isOpen:
+                        onGoing = line[i]
+                        quoteChar = line[i]
+                        isOpen = True
+                        continue
+
+                    # now open
+                    if isEscape:
+                        onGoing = onGoing + line[i]
+                        isEscape = False
+                    else:
+                        onGoing = onGoing + line[i]
+                        isOpen = False
+                        quoteChar = None
+                        # res.add(onGoing)
+
+                        # match check
+                        if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(onGoing[1:-1].strip()) > 0:
+                            lineMatchSet.add(onGoing)
+
                     continue
-
-                # now open
-                if isEscape:
-                    onGoing = onGoing + '"'
-                    isEscape = False
                 else:
-                    onGoing = onGoing + line[i]
-                    isOpen = False
-                    # res.add(onGoing)
-
-                    # match check
-                    if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(onGoing[1:-1].strip()) > 0:
-                        lineSet.add(onGoing)
-
-                continue
+                    pass
 
             if isOpen:
                 if '\\' == line[i]:
@@ -174,7 +181,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
                     onGoing = onGoing + line[i]
 
         # post line check
-        sortedLM = list(lineSet)
+        sortedLM = list(lineMatchSet)
         sortedLM.sort(key=lambda x: len(x), reverse=True)
         sacLine = line
         for lm in sortedLM:
@@ -190,8 +197,13 @@ def getScriptPotentialTexts(text: str) -> set[str]:
     return res
 
 
-def escapeLiteralText(text: str) -> str:
-    return text.replace("\\", '\\\\').replace("\n", '\\n').replace('"', '\\"')
+def escapeLiteralText(text: str, quote: str = '"') -> str:
+    escaped = text.replace("\\", '\\\\').replace("\n", '\\n')
+    if quote == '"':
+        escaped = escaped.replace('"', '\\"')
+    elif quote == "'":
+        escaped = escaped.replace("'", "\\'")
+    return escaped
 
 
 def replaceFromText(text: str, replacement: Dict[str, str]) -> str:
