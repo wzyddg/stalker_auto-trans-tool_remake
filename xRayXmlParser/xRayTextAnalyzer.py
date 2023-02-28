@@ -21,8 +21,9 @@ allSeparateTextCpl = re.compile(allInOnePattern)
 
 noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 
-# add guarantee safe here 
-scriptLinePermitPtn = re.compile(r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
+# add guarantee safe here
+scriptLinePermitPtn = re.compile(
+    r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
     r"(exec|write|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
@@ -255,9 +256,13 @@ def doesTextLookLikeScript(text: str) -> bool:
         return False
     if '=' in text or '@' in text:
         return True
-    strangePtn = re.compile(":\d")
-    if len(strangePtn.findall(text)) > 0:
-        return True
+
+    # special blacklist
+    blklst = [":\d", "load\s+~+"]
+    for blk in blklst:
+        strangePtn = re.compile(blk)
+        if len(strangePtn.findall(text)) > 0:
+            return True
 
 
 def cutTextWithSeparator(text: str) -> List[Dict[str, str]]:
