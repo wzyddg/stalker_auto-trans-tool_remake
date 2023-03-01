@@ -6,7 +6,7 @@ rusLettersString = "АаБбВвГгДдЕеЁёЖжЗзИиЙйКкЛлМмНн
 actionPattern = r"[()\"']?[\s]*\$\$[\s]*[Aa][Cc][Tt][_a-zA-Z0-9]*[\s]*\$\$[\s]*[()\"']?"
 
 # add descriptor, actually not just placeholder, it's a placeholder detector, members' order matter in a group
-placeholderPattern = r"%+(?:(?:[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+%+)|(?:[.0-9]*[A-Za-z](?:\[[a-z0-9,]*?\])?))[\s]*"
+placeholderPattern = r"%+(?:(?:[a-zA-Z0-9_]+(?:\.[a-zA-Z0-9_]+)+%+)|(?:[.0-9]*[A-Za-z](?:\[[a-z0-9,\s_]*?\])?))[\s]*"
 scriptPlaceHolderPattern = r"(?<!\$)\$[a-zA-Z0-9_" + \
     rusLettersString + "]+[ ,.!?\"]?"
 lineBreakPattern = r"(?:\n|\\n)+"
