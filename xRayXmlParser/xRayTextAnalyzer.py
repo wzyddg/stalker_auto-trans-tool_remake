@@ -25,9 +25,9 @@ noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 scriptLinePermitPtn = re.compile(
     r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
-    r"(exec|write|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
+    r"(exec|write|parse_names|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
-
+scriptContentPatternStringBlackList = [":\d", "load\s+~+"]
 
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
     blackList = []
@@ -270,7 +270,7 @@ def doesTextLookLikeScript(text: str) -> bool:
         return True
 
     # special blacklist
-    blklst = [":\d", "load\s+~+"]
+    blklst = scriptContentPatternStringBlackList
     for blk in blklst:
         strangePtn = re.compile(blk)
         if len(strangePtn.findall(text)) > 0:
