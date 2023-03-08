@@ -29,6 +29,7 @@ scriptLineSensitivePtn = re.compile(
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
 scriptContentPatternStringBlackList = [":\d", "load\s+~+"]
 
+
 def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
     blackList = []
     for lang in entity.texts:
@@ -185,7 +186,10 @@ def getScriptPotentialTexts(text: str) -> set[str]:
         sortedLM.sort(key=lambda x: len(x), reverse=True)
         sacLine = line
         for lm in sortedLM:
-            sacLine = sacLine.replace(lm, "")
+            thisQuoteChar = lm[0]
+            escLM = thisQuoteChar + \
+                escapeLiteralText(lm[1:-1], quote=thisQuoteChar)+thisQuoteChar
+            sacLine = sacLine.replace(escLM, "")
         normLine = sacLine.lower()
         if len(scriptLinePermitPtn.findall(normLine)) > 0:
             res = set(sortedLM+list(res))
