@@ -273,7 +273,7 @@ Options:
                     if cand in reuseTexts:
                         print('!', end='')
                         continue
-                    if xRayXmlParser.doesTextLookLikeId(cand):
+                    if cand.strip() == '' or xRayXmlParser.doesTextLookLikeId(cand):
                         continue
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
