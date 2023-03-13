@@ -138,3 +138,20 @@ def parse_xray_ltx_file(filePath: str, candidateEncodings: List[str] = ["cp1251"
     guys = getLtxPotentialTexts(wholeText)
 
     return (wholeText, guys, successEncoding)
+
+
+def read_plain_text(filePath: str, candidateEncodings: List[str] = ["cp1251", 'cp1252', 'utf-8']):
+    for encoding in candidateEncodings:
+        try:
+            f = open(filePath, "r", encoding=encoding)
+            wholeText = f.read()
+        except UnicodeDecodeError:
+            f.close()
+            print(" ├──" + filePath + " is not encoded with "+encoding)
+            continue
+        else:
+            f.close()
+            print(" ├──" + filePath + " successfully decoded with "+encoding)
+            break
+
+    return wholeText

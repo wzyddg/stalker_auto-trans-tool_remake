@@ -5,6 +5,7 @@ import os
 import sys
 import getopt
 import zhconv
+import json
 
 
 class Unbuffered(object):
@@ -30,6 +31,7 @@ def main(argv):
     sourceLangForTextTag = "rus"
     textDir = None
     reuseDir = None
+    blackListJson = None
     targetLang = None
     appId = None
     appKey = None
@@ -41,8 +43,8 @@ def main(argv):
     convertToCHS = False
     ua = ""
 
-    opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:r:", [
-                               "runnableCheck", "convertToCHS", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "analyzeCharCount=", "function=", "ua="])
+    opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:b:r:", [
+                               "runnableCheck", "convertToCHS", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "blackListIdJson=", "analyzeCharCount=", "function=", "ua="])
     print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -68,14 +70,16 @@ Options:
                                                 default 0, means don't analyze(qq engine only)
   -r <value>|--reusePath=<value>            (Optional)path of existing translated xml folder.
                                                 for gameplay translating text id protecting or text translating accelerating, always quote with ""
+  -b <value>|--blackListIdJson=<value>      (Optional)path of force translate id json array file, even if it's in translated xml.
+                                                work with -r parameter.
+  --forceTransFiles=<value>                 (Optional)files that ignore reuse.
+                                                concat with ','. eg: a.xml,b.xml
   -c        |--runnableCheck                (Optional)just analyze files.
                                                 won't do translation.
   -o        |--outputWhenEmpty              (Optional)generate output file even this file has nothing translated.
                                                 for gameplay/script/ltx, for solving #include encoding problem.
   --convertToCHS                            (Optional)convert Traditional Chinese
                                                 to Simplified Chinese.
-  --forceTransFiles=<value>                 (Optional)files that ignore reuse.
-                                                concat with ','. eg: a.xml,b.xml
   --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
                                                 when ltx, program will recursively translate all ltx files.
   --ua=<value>                              (Optional)user agent from browser, use with qq engine to generate apikey, always quote with "".
@@ -102,6 +106,8 @@ Options:
             analyzeCharCount = int(arg)
         elif opt in ("-r", "--reusePath"):
             reuseDir = arg
+        elif opt in ("-b", "--blackListIdJson"):
+            blackListJson = arg
         elif opt in ("--forceTransFiles"):
             forceTrans = arg.split(",")
         elif opt in ("--convertToCHS"):
@@ -172,6 +178,12 @@ Options:
         tempTexts = readExistingText(tempDir)
         for key in tempTexts:
             reuseTexts[key] = tempTexts[key]
+
+    blackListId = []
+    if blackListJson is not None:
+        blackListId = json.loads(xRayXmlParser.read_plain_text(blackListJson))
+        for blc in blackListId:
+            reuseTexts.pop(blc, "")
 
     globalReqCount = 0
     globalTransChars = 0
