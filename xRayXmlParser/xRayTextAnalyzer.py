@@ -38,7 +38,7 @@ def getRecommendLangText(entity: TextEntity, targetLang: str) -> Tuple[str]:
     recOrder = ["eng", "rus", "ukr"]
     for lang in recOrder:
         #
-        if lang == targetLang or lang not in entity.texts:
+        if lang not in entity.texts:
             continue
         if not lang == "rus" and entity.texts[lang].strip().startswith("==="):
             continue

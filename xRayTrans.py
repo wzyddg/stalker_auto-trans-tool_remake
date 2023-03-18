@@ -161,7 +161,7 @@ Options:
                 exEnts = xRayXmlParser.parse_xray_text_xml(
                     reFullPath, ['utf-8', 'cp1252', 'cp1251'])
                 for ent in exEnts:
-                    thisRe = xRayXmlParser.getRecommendLangText(ent, "chs")[1]
+                    thisRe = xRayXmlParser.getRecommendLangText(ent, targetLang)[1]
                     if convertToCHS:
                         thisRe = zhconv.convert(thisRe, 'zh-cn')
                     reuseT[ent.id] = thisRe
@@ -259,8 +259,12 @@ Options:
                         print('.', end='')
                         continue
 
-                    chosen = xRayXmlParser.getRecommendLangText(entity, "chs")
-                    transedStr = translateOneString(chosen[1], chosen[0])
+                    chosen = xRayXmlParser.getRecommendLangText(
+                        entity, targetLang)
+                    if targetLang == chosen[0]:
+                        transedStr = chosen[1]
+                    else:
+                        transedStr = translateOneString(chosen[1], chosen[0])
                     doneHere[entity.id] = transedStr
 
                     # every 2 minutes generate a temp file
