@@ -111,7 +111,7 @@ class TransmartQQTranslator(WebTranslator):
                 print("(can't translate, return original string)")
                 print(str(resJson))
                 return text
-        return self.resultFilter(res)
+        return self.resultFilter(text, res)
 
 
 class BaiduTranslator(WebTranslator):
