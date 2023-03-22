@@ -37,6 +37,14 @@ class TransmartQQTranslator(WebTranslator):
         ua = bytes(userAgent, "utf-8")
         self.clientKey = base64.b64encode(ua).decode("utf-8")[0:100]
 
+    def resultFilter(self, sourceText: str, resultText: str) -> str:
+        # this is for tencent engine bug, somethimes double the result
+        resFind = re.findall(r"^([\S\s]+)\s*\1$", resultText.strip())
+        if len(resFind) > 0:
+            if len(re.findall(r"^([\S\s]+)\s*\1$", sourceText.strip())) == 0:
+                return resFind[0]
+        return resultText
+
     def analyzeTextByEngine(self, text: str) -> list[str]:
         anabody = {"header": {"fn": "text_analysis", "client_key": self.clientKey},
                    "type": "plain", "text": text}
@@ -103,7 +111,7 @@ class TransmartQQTranslator(WebTranslator):
                 print("(can't translate, return original string)")
                 print(str(resJson))
                 return text
-        return res
+        return self.resultFilter(res)
 
 
 class BaiduTranslator(WebTranslator):
@@ -163,6 +171,7 @@ class BaiduTranslator(WebTranslator):
         return sign.hexdigest()
 
 
+# Deprecated, can't use DeepL for free
 class DeepLTranslator(WebTranslator):
     __langCodeMap = {
         "chs": "ZH",
