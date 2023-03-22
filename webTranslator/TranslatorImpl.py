@@ -38,10 +38,10 @@ class TransmartQQTranslator(WebTranslator):
         self.clientKey = base64.b64encode(ua).decode("utf-8")[0:100]
 
     def resultFilter(self, sourceText: str, resultText: str) -> str:
-        # this is for tencent engine bug, somethimes double the result
-        resFind = re.findall(r"^([\S\s]+)\s*\1$", resultText.strip())
+        # this is for tencent engine bug, somethimes double the result, and maybe a wide comma between.
+        resFind = re.findall(r"^([\S\s]+)[\s：]*\1$", resultText.strip())
         if len(resFind) > 0:
-            if len(re.findall(r"^([\S\s]+)\s*\1$", sourceText.strip())) == 0:
+            if len(re.findall(r"^([\S\s]+)[\s:：]*\1$", sourceText.strip())) == 0:
                 return resFind[0]
         return resultText
 
