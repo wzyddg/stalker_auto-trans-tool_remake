@@ -41,6 +41,7 @@ def main(argv):
     transFunction = 'text'
     outputWhenEmpty = False
     convertToCHS = False
+    scriptsTranslateFunctionName = 'game.translate_string'
     ua = ""
 
     opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:b:r:", [
@@ -49,14 +50,14 @@ def main(argv):
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             helpText = """
-S.T.A.L.K.E.R. Game(X-Ray Engine) Text Auto-Translator, using with language pack generator is recommended.
-Version 2.0.2, Updated at Aug 13th 2022
+S.T.A.L.K.E.R. Game(X-Ray Engine or like) Text Auto-Translator, using with language pack generator is recommended.
+Version 2.1.2, Updated at March 23th 2023
 by wzyddgFB from baidu S.T.A.L.K.E.R. tieba
 
 Options:
   -e <value>|--engine=<value>               use what translate engine.
-                                                eg: baidu qq deepl
-  -p <value>|--path=<value>                 path of target folder.
+                                                eg: baidu qq 
+  -p <value>|--path=<value>                 path of the folder containing what you want to translate.
                                                 always quote with ""
   -t <value>|--toLang=<value>               translate to what language.
                                                 eg: eng chs
@@ -69,19 +70,21 @@ Options:
   -a <value>|--analyzeCharCount=<value>     (Optional)more than how many chars does the sentence need qq analyze.
                                                 default 0, means don't analyze(qq engine only)
   -r <value>|--reusePath=<value>            (Optional)path of existing translated xml folder.
-                                                for gameplay translating text id protecting or text translating accelerating, always quote with ""
+                                                for cfgxml/script?/ltx translating text id protecting or text translating accelerating, always quote with ""
   -b <value>|--blackListIdJson=<value>      (Optional)path of force translate id json array file, even if it's in translated xml.
-                                                work with -r parameter.
+                                                work with -r parameter. file content eg: ["dialog_sah_11","dialog_wolf_22"]
   --forceTransFiles=<value>                 (Optional)files that ignore reuse.
                                                 concat with ','. eg: a.xml,b.xml
-  -c        |--runnableCheck                (Optional)just analyze files.
+  -c        |--runnableCheck                (Optional)just analyze and extract files.
                                                 won't do translation.
-  -o        |--outputWhenEmpty              (Optional)generate output file even this file has nothing translated.
-                                                for gameplay/script/ltx, for solving #include encoding problem.
+  -o        |--outputAnyWay                 (Optional)generate output file even this file has nothing translated.
+                                                for cfgxml/script?/ltx, for solving #include encoding problem.
   --convertToCHS                            (Optional)convert Traditional Chinese
                                                 to Simplified Chinese.
-  --function=<value>                        (Optional)translating function. default text. eg: text gameplay script ltx.
-                                                when ltx, program will recursively translate all ltx files.
+  --function=<value>                        (Optional)translating function. default text. eg: text cfgxml ltx scriptL scriptE .
+                                                scriptL(same as legacy script) is translate and replace in original files.
+                                                scriptE is translate and extract to a special text xml like other fuctions.
+                                                program will recursively translate all files for cfgxml/script?/ltx.
   --ua=<value>                              (Optional)user agent from browser, use with qq engine to generate apikey, always quote with "".
         """
             print(helpText)
@@ -116,6 +119,11 @@ Options:
                 __file__), "resources", "zhcdict.json"))
         elif opt in ("--function"):
             transFunction = arg
+            # support legacy cmd/shell
+            if transFunction == 'gameplay':
+                transFunction = 'cfgxml'
+            if transFunction == 'script':
+                transFunction = 'scriptL'
         elif opt in ("--ua"):
             ua = arg
 
@@ -277,12 +285,12 @@ Options:
                     os.path.join(doneDir, xRFile), doneHere)
                 print("")
 
-            elif transFunction == 'gameplay':
+            elif transFunction == 'cfgxml':
                 pathSteps = xRFile.split(os.path.sep)
                 if pathSteps[-1].lower().count(".xml") < 1 or "text" in pathSteps:
                     i = i+1
                     continue
-                wholeText, candidates, successEncoding = xRayXmlParser.parse_xray_gameplay_xml(
+                wholeText, candidates, successEncoding = xRayXmlParser.parse_xray_cfgxml_xml(
                     fullPath, ['cp1251', 'cp1252', 'utf-8', 'cp1251'])
                 repDict = {}
                 for cand in candidates:
@@ -350,7 +358,7 @@ Options:
                         os.path.join(doneDir, xRFile), repdText, needXmlHeader=False, encoding=successEncoding)
                 print("")
 
-            elif transFunction == 'script':
+            elif transFunction.startswith('script'):
                 pathSteps = xRFile.split(os.path.sep)
                 if pathSteps[-1].lower().count(".script") < 1:
                     i = i+1
@@ -388,7 +396,7 @@ Options:
                         doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")
 
-        elif os.path.isdir(fullPath) and transFunction in ['ltx', 'script', 'gameplay']:
+        elif os.path.isdir(fullPath) and transFunction in ['ltx', 'scriptL', 'scriptE', 'cfgxml']:
             if not xRFile == "translated_"+engine and not xRFile.endswith(".git"):
                 subs = os.listdir(fullPath)
                 for sub in subs:
@@ -404,15 +412,14 @@ Options:
         # end one round
         i = i+1
 
-    if transFunction in ['script', 'ltx'] and "chars_all_in" in extract:
+    if transFunction in ['scriptL', 'ltx'] and "chars_all_in" in extract:
         pie = xRayXmlParser.splitTextToPiecesAtLength(
             "".join(extract["chars_all_in"]), 500)
-        # dasd
         extract.clear()
         for i in range(len(pie)):
             extract["text_gen_for_font_"+str(i)] = pie[i]
 
-    if transFunction in ['gameplay', 'script', 'ltx']:
+    if transFunction in ['cfgxml', 'scriptL', 'ltx']:
         xRayXmlParser.generateOutputXml(os.path.join(
             doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
 

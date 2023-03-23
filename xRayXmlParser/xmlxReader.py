@@ -62,7 +62,7 @@ def parse_xray_text_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"
     return extract_entity_from_root(root)
 
 
-def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
+def parse_xray_cfgxml_xml(filePath: str, candidateEncodings: List[str] = ["cp1251"]) -> Tuple[str, set[str]]:
     successEncoding = ""
     for encodingIndex in range(len(candidateEncodings)):
         encoding = candidateEncodings[encodingIndex]
@@ -88,7 +88,7 @@ def parse_xray_gameplay_xml(filePath: str, candidateEncodings: List[str] = ["cp1
     wholeText = normalize_xml_string(
         wholeText, needFixST=False, deleteHeader=False)
 
-    guys = getGameplayPotentialTexts(wholeText)
+    guys = getConfigXmlPotentialTexts(wholeText)
 
     return (wholeText, guys, successEncoding)
 

@@ -77,7 +77,7 @@ def avoid_error_normalizer(text: str) -> str:
     return text
 
 
-def getGameplayPotentialTexts(text: str) -> set[str]:
+def getConfigXmlPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
