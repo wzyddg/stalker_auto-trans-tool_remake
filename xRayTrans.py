@@ -52,7 +52,7 @@ def main(argv):
             helpText = """
 S.T.A.L.K.E.R. Game(X-Ray Engine or like) Text Auto-Translator, using with language pack generator is recommended.
 Version 2.1.2, Updated at March 23th 2023
-by wzyddgFB from baidu S.T.A.L.K.E.R. tieba
+by wzyddg(FB) from baidu S.T.A.L.K.E.R. tieba
 
 Options:
   -e <value>|--engine=<value>               use what translate engine.
@@ -81,7 +81,7 @@ Options:
                                                 for cfgxml/script?/ltx, for solving #include encoding problem.
   --convertToCHS                            (Optional)convert Traditional Chinese
                                                 to Simplified Chinese.
-  --function=<value>                        (Optional)translating function. default text. eg: text cfgxml ltx scriptL scriptE .
+  --function=<value>                        (Optional)translating function. default text. eg: text cfgxml ltx scriptL scriptE.
                                                 scriptL(same as legacy script) is translate and replace in original files.
                                                 scriptE is translate and extract to a special text xml like other fuctions.
                                                 program will recursively translate all files for cfgxml/script?/ltx.
@@ -377,15 +377,22 @@ Options:
                     transedStr = translateOneString(
                         cand, globalTranslator.autoLangCode)
 
-                    if "chars_all_in" not in extract:
-                        extract["chars_all_in"] = set()
+                    if transFunction == 'scriptL':
+                        if "chars_all_in" not in extract:
+                            extract["chars_all_in"] = set()
+                        for char in transedStr:
+                            extract["chars_all_in"].add(char)
 
-                    for char in transedStr:
-                        extract["chars_all_in"].add(char)
+                        # escape back
+                        repDict[thisQuoteChar+xRayXmlParser.escapeLiteralText(
+                            cand, quote=thisQuoteChar)+thisQuoteChar] = thisQuoteChar+xRayXmlParser.escapeLiteralText(transedStr, quote=thisQuoteChar)+thisQuoteChar
+                    elif transFunction == 'scriptE':
+                        extKey = textIdPrefix+str(totalGenerateCount)
+                        totalGenerateCount = totalGenerateCount+1
+                        extract[extKey] = transedStr
+                        repDict[thisQuoteChar+xRayXmlParser.escapeLiteralText(
+                            cand, quote=thisQuoteChar)+thisQuoteChar] = scriptsTranslateFunctionName+'("'+extKey+'")'
 
-                    # escape back
-                    repDict[thisQuoteChar+xRayXmlParser.escapeLiteralText(
-                        cand, quote=thisQuoteChar)+thisQuoteChar] = thisQuoteChar+xRayXmlParser.escapeLiteralText(transedStr, quote=thisQuoteChar)+thisQuoteChar
                 repdText = wholeText
                 if len(repDict) > 0:
                     repdText = xRayXmlParser.replaceFromText(
@@ -412,14 +419,14 @@ Options:
         # end one round
         i = i+1
 
-    if transFunction in ['scriptL', 'ltx'] and "chars_all_in" in extract:
+    if transFunction in ['scriptL'] and "chars_all_in" in extract:
         pie = xRayXmlParser.splitTextToPiecesAtLength(
             "".join(extract["chars_all_in"]), 500)
         extract.clear()
         for i in range(len(pie)):
             extract["text_gen_for_font_"+str(i)] = pie[i]
 
-    if transFunction in ['cfgxml', 'scriptL', 'ltx']:
+    if transFunction in ['cfgxml', 'scriptL', 'scriptE', 'ltx']:
         xRayXmlParser.generateOutputXml(os.path.join(
             doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
 

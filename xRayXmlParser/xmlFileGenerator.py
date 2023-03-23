@@ -11,6 +11,7 @@ def generateOutputXml(filePath: str, texts: Dict[str, str]):
             texts[textId] = "".join(texts[textId])
 
         # add break:\n every 1000 char so it can be loaded into game
+        # maybe protect placeholder later
         fileText = fileText+'\t\t<text>' + \
             '\n'.join(splitTextToPiecesAtLength(
                 escapeXmlContentString(texts[textId]), 1000))+'</text>\n'
