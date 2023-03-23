@@ -1,43 +1,43 @@
-S.T.A.L.K.E.R. Game(X-Ray Engine or like) Text Auto-Translator, using with language pack generator is recommended.  
-Version 2.1.2, Updated at March 23th 2023  
-by wzyddg(FB) from baidu S.T.A.L.K.E.R. tieba  
+S.T.A.L.K.E.R.&nbsp;Game(X-Ray&nbsp;Engine&nbsp;or&nbsp;like)&nbsp;Text&nbsp;Auto-Translator,&nbsp;using&nbsp;with&nbsp;language&nbsp;pack&nbsp;generator&nbsp;is&nbsp;recommended.  
+Version&nbsp;2.1.2,&nbsp;Updated&nbsp;at&nbsp;March&nbsp;23th&nbsp;2023  
+by&nbsp;wzyddg(FB)&nbsp;from&nbsp;baidu&nbsp;S.T.A.L.K.E.R.&nbsp;tieba  
   
 Options:  
-  -e &lt;value&gt;|--engine=&lt;value&gt;               use what translate engine.  
-                                                eg: baidu qq   
-  -p &lt;value&gt;|--path=&lt;value&gt;                 path of the folder containing what you want to translate.  
-                                                always quote with `""`  
-  -t &lt;value&gt;|--toLang=&lt;value&gt;               translate to what language.  
-                                                eg: eng chs  
-  -i &lt;value&gt;|--appId=&lt;value&gt;                (Optional)appId of engine.  
-                                                required for baidu  
-  -k &lt;value&gt;|--appKey=&lt;value&gt;               (Optional)appKey of engine.  
-                                                required for baidu  
-  -f &lt;value&gt;|--fromLang=&lt;value&gt;             (Optional)from what language.  
-                                                default rus. eg: eng rus ukr  
-  -a &lt;value&gt;|--analyzeCharCount=&lt;value&gt;     (Optional)more than how many chars does the sentence need qq analyze.  
-                                                default 0, means don't analyze(qq engine only)  
-  -r &lt;value&gt;|--reusePath=&lt;value&gt;            (Optional)path of existing translated xml folder.  
-                                                for cfgxml/script?/ltx translating text id protecting or text translating accelerating, always quote with `""`  
-  -b &lt;value&gt;|--blackListIdJson=&lt;value&gt;      (Optional)path of force translate id json array file, even if it's in translated xml.  
-                                                work with -r parameter. file content eg: `["dialog_sah_11","dialog_wolf_22"]`  
-  --forceTransFiles=&lt;value&gt;                 (Optional)files that ignore reuse.  
-                                                concat with `,`. eg: a.xml,b.xml  
-  -c        |--runnableCheck                (Optional)just analyze and extract files.  
-                                                won't do translation.  
-  -o        |--outputAnyWay                 (Optional)generate output file even this file has nothing translated.  
-                                                for cfgxml/script?/ltx, for solving #include encoding problem.  
-  --convertToCHS                            (Optional)convert Traditional Chinese  
-                                                to Simplified Chinese.  
-  --function=&lt;value&gt;                        (Optional)translating function. default text. eg: text cfgxml ltx scriptL scriptE.  
-                                                scriptL(same as legacy script) is translate and replace in original files.  
-                                                scriptE is translate and extract to a special text xml like other fuctions.  
-                                                program will recursively translate all files for cfgxml/script?/ltx.  
-  --ua=&lt;value&gt;                              (Optional)user agent from browser, use with qq engine to generate apikey, always quote with `""`.  
-   
-   
- # I fuсКing hаtе МаrКdоwn  
-   
-   
-package :  
-pyinstaller -F .\xRayTrans.py -i .\4.ico --add-data="resources;resources"  
+&nbsp;&nbsp;-e&nbsp;&lt;value&gt;|--engine=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;use&nbsp;what&nbsp;translate&nbsp;engine.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eg:&nbsp;baidu&nbsp;qq&nbsp;  
+&nbsp;&nbsp;-p&nbsp;&lt;value&gt;|--path=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;path&nbsp;of&nbsp;the&nbsp;folder&nbsp;containing&nbsp;what&nbsp;you&nbsp;want&nbsp;to&nbsp;translate.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;always&nbsp;quote&nbsp;with&nbsp;`""`  
+&nbsp;&nbsp;-t&nbsp;&lt;value&gt;|--toLang=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;translate&nbsp;to&nbsp;what&nbsp;language.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;eg:&nbsp;eng&nbsp;chs  
+&nbsp;&nbsp;-i&nbsp;&lt;value&gt;|--appId=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)appId&nbsp;of&nbsp;engine.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;required&nbsp;for&nbsp;baidu  
+&nbsp;&nbsp;-k&nbsp;&lt;value&gt;|--appKey=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)appKey&nbsp;of&nbsp;engine.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;required&nbsp;for&nbsp;baidu  
+&nbsp;&nbsp;-f&nbsp;&lt;value&gt;|--fromLang=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)from&nbsp;what&nbsp;language.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;rus.&nbsp;eg:&nbsp;eng&nbsp;rus&nbsp;ukr  
+&nbsp;&nbsp;-a&nbsp;&lt;value&gt;|--analyzeCharCount=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)more&nbsp;than&nbsp;how&nbsp;many&nbsp;chars&nbsp;does&nbsp;the&nbsp;sentence&nbsp;need&nbsp;qq&nbsp;analyze.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default&nbsp;0,&nbsp;means&nbsp;don't&nbsp;analyze(qq&nbsp;engine&nbsp;only)  
+&nbsp;&nbsp;-r&nbsp;&lt;value&gt;|--reusePath=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)path&nbsp;of&nbsp;existing&nbsp;translated&nbsp;xml&nbsp;folder.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;cfgxml/script?/ltx&nbsp;translating&nbsp;text&nbsp;id&nbsp;protecting&nbsp;or&nbsp;text&nbsp;translating&nbsp;accelerating,&nbsp;always&nbsp;quote&nbsp;with&nbsp;`""`  
+&nbsp;&nbsp;-b&nbsp;&lt;value&gt;|--blackListIdJson=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)path&nbsp;of&nbsp;force&nbsp;translate&nbsp;id&nbsp;json&nbsp;array&nbsp;file,&nbsp;even&nbsp;if&nbsp;it's&nbsp;in&nbsp;translated&nbsp;xml.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;work&nbsp;with&nbsp;-r&nbsp;parameter.&nbsp;file&nbsp;content&nbsp;eg:&nbsp;`["dialog_sah_11","dialog_wolf_22"]`  
+&nbsp;&nbsp;--forceTransFiles=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)files&nbsp;that&nbsp;ignore&nbsp;reuse.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;concat&nbsp;with&nbsp;`,`.&nbsp;eg:&nbsp;a.xml,b.xml  
+&nbsp;&nbsp;-c&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--runnableCheck&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)just&nbsp;analyze&nbsp;and&nbsp;extract&nbsp;files.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;won't&nbsp;do&nbsp;translation.  
+&nbsp;&nbsp;-o&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|--outputAnyWay&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)generate&nbsp;output&nbsp;file&nbsp;even&nbsp;this&nbsp;file&nbsp;has&nbsp;nothing&nbsp;translated.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;for&nbsp;cfgxml/script?/ltx,&nbsp;for&nbsp;solving&nbsp;#include&nbsp;encoding&nbsp;problem.  
+&nbsp;&nbsp;--convertToCHS&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)convert&nbsp;Traditional&nbsp;Chinese  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to&nbsp;Simplified&nbsp;Chinese.  
+&nbsp;&nbsp;--function=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)translating&nbsp;function.&nbsp;default&nbsp;text.&nbsp;eg:&nbsp;text&nbsp;cfgxml&nbsp;ltx&nbsp;scriptL&nbsp;scriptE.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scriptL(same&nbsp;as&nbsp;legacy&nbsp;script)&nbsp;is&nbsp;translate&nbsp;and&nbsp;replace&nbsp;in&nbsp;original&nbsp;files.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;scriptE&nbsp;is&nbsp;translate&nbsp;and&nbsp;extract&nbsp;to&nbsp;a&nbsp;special&nbsp;text&nbsp;xml&nbsp;like&nbsp;other&nbsp;fuctions.  
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;program&nbsp;will&nbsp;recursively&nbsp;translate&nbsp;all&nbsp;files&nbsp;for&nbsp;cfgxml/script?/ltx.  
+&nbsp;&nbsp;--ua=&lt;value&gt;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(Optional)user&nbsp;agent&nbsp;from&nbsp;browser,&nbsp;use&nbsp;with&nbsp;qq&nbsp;engine&nbsp;to&nbsp;generate&nbsp;apikey,&nbsp;always&nbsp;quote&nbsp;with&nbsp;`""`.  
+&nbsp;  
+&nbsp;  
+&nbsp;#&nbsp;I&nbsp;fuсКing&nbsp;hаtе&nbsp;МаrКdоwn  
+&nbsp;  
+&nbsp;  
+package&nbsp;:  
+pyinstaller&nbsp;-F&nbsp;.\xRayTrans.py&nbsp;-i&nbsp;.\4.ico&nbsp;--add-data="resources;resources"  
