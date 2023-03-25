@@ -39,13 +39,13 @@ def main(argv):
     runnableCheck = False
     forceTrans = []
     transFunction = 'text'
-    outputWhenEmpty = False
+    outputAnyway = False
     convertToCHS = False
     scriptsTranslateFunctionName = 'game.translate_string'
     ua = ""
 
     opts, args = getopt.getopt(argv[1:], "choe:i:k:f:t:p:a:b:r:", [
-                               "runnableCheck", "convertToCHS", "help", "outputWhenEmpty", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "blackListIdJson=", "analyzeCharCount=", "function=", "ua="])
+                               "runnableCheck", "convertToCHS", "help", "outputAnyway", "engine=", "appId=", "appKey=", "fromLang=", "toLang=", "path=", "forceTransFiles=", "reusePath=", "blackListIdJson=", "analyzeCharCount=", "function=", "ua="])
     print(opts)
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -56,7 +56,7 @@ by wzyddg(FB) from baidu S.T.A.L.K.E.R. tieba
 
 Options:
   -e <value>|--engine=<value>               use what translate engine.
-                                                eg: baidu qq 
+                                                eg: baidu qq google
   -p <value>|--path=<value>                 path of the folder containing what you want to translate.
                                                 always quote with ""
   -t <value>|--toLang=<value>               translate to what language.
@@ -77,8 +77,8 @@ Options:
                                                 concat with ','. eg: a.xml,b.xml
   -c        |--runnableCheck                (Optional)just analyze and extract files.
                                                 won't do translation.
-  -o        |--outputAnyWay                 (Optional)generate output file even this file has nothing translated.
-                                                for cfgxml/script?/ltx, for solving #include encoding problem.
+  -o        |--outputAnyway                 (Optional)generate output file even this file has nothing translated.
+                                                for cfgxml/script?/ltx, for avoiding #include encoding problem.
   --convertToCHS                            (Optional)convert Traditional Chinese
                                                 to Simplified Chinese.
   --function=<value>                        (Optional)translating function. default text. eg: text cfgxml ltx scriptL scriptE.
@@ -103,8 +103,8 @@ Options:
             sourceLangForTextTag = arg
         elif opt in ("-t", "--toLang"):
             targetLang = arg
-        elif opt in ("-o", "--outputWhenEmpty"):
-            outputWhenEmpty = True
+        elif opt in ("-o", "--outputAnyway"):
+            outputAnyway = True
         elif opt in ("-a", "--analyzeCharCount"):
             analyzeCharCount = int(arg)
         elif opt in ("-r", "--reusePath"):
@@ -139,14 +139,16 @@ Options:
     def getTranslator(e) -> webTranslator.WebTranslator:
         if e == 'qq':
             return webTranslator.TransmartQQTranslator(analyzeCharCount, ua)
-        elif e == 'deepl':
-            return webTranslator.DeepLTranslator()
+        elif e == 'google':
+            return webTranslator.GoogleTranslator()
         elif e == 'baidu':
             return webTranslator.BaiduTranslator(appId, appKey)
+        elif e == 'deepl':
+            return webTranslator.DeepLTranslator()
 
     def getBenchPlayerTrans(e) -> webTranslator.WebTranslator:
         if e == 'qq':
-            return webTranslator.BaiduTranslator(appId, appKey)
+            return webTranslator.GoogleTranslator()
         else:
             return webTranslator.TransmartQQTranslator(1)
 
@@ -313,7 +315,7 @@ Options:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
 
-                if len(repDict) > 0 or outputWhenEmpty:
+                if len(repDict) > 0 or outputAnyway:
                     xRayXmlParser.generateOutputFileFromString(
                         os.path.join(doneDir, xRFile), repdText, needXmlHeader=False, encoding=successEncoding)
                 print("")
@@ -353,7 +355,7 @@ Options:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
 
-                if len(repDict) > 0 or outputWhenEmpty:
+                if len(repDict) > 0 or outputAnyway:
                     xRayXmlParser.generateOutputFileFromString(
                         os.path.join(doneDir, xRFile), repdText, needXmlHeader=False, encoding=successEncoding)
                 print("")
@@ -398,7 +400,7 @@ Options:
                     repdText = xRayXmlParser.replaceFromText(
                         wholeText, repDict)
 
-                if len(repDict) > 0 or outputWhenEmpty:
+                if len(repDict) > 0 or outputAnyway:
                     xRayXmlParser.generateOutputFileFromString(os.path.join(
                         doneDir, xRFile), repdText, needXmlHeader=False)
                 print("")

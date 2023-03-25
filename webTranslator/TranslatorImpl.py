@@ -12,6 +12,72 @@ import base64
 import random
 
 
+class GoogleTranslator(WebTranslator):
+
+    __langCodeMap = {
+        "chs": "zh-CN",
+        "eng": "en",
+        "ezauto": "auto",
+        "rus": "ru",
+        "ukr": "uk"
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.mainTransApi = 'https://translate.googleapis.com/translate_a/single'
+        self.eachRequestGap = 1
+        self.timedOutGap = 1
+        self.lastRequest
+
+    def getApiLangCode(self, textLang: str) -> str:
+        return GoogleTranslator.__langCodeMap[textLang]
+
+    def resultFilter(self, sourceText: str, resultText: str) -> str:
+        return resultText
+
+    def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
+        runFL = self.getApiLangCode(fromLang)
+        runTL = self.getApiLangCode(toLang)
+
+        if timeit.default_timer()-self.lastRequest < self.eachRequestGap:
+            sleep(self.eachRequestGap)
+        params = {
+            "client": "gtx",
+            "q": text,
+            "sl": runFL,
+            "tl": runTL,
+            "dt": "t",
+            "dj": "1",
+            "ie": "UTF-8",
+            "oe": "UTF-8"
+        }
+        paramsStr = urllib.parse.urlencode(params)
+        response = None
+        try:
+            response = requests.get(self.mainTransApi+"?"+paramsStr)
+        except requests.exceptions.ConnectionError as exc:
+            if exc.args[0].reason.original_error.errno == 10054:
+                print("(10054,retry)")
+                sleep(self.timedOutGap)
+                return self.doTranslate(text, fromLang, toLang)
+            else:
+                pass
+
+        resJson = json.loads(response.text)
+
+        self.lastRequest = timeit.default_timer()
+        res = ""
+        if "sentences" in resJson:
+            for sent in resJson["sentences"]:
+                res = res + sent["trans"]
+        else:
+            # to be found
+            print("(can't translate, return original string)")
+            print(str(resJson))
+            return text
+        return self.resultFilter(text, res)
+
+
 class TransmartQQTranslator(WebTranslator):
     __langCodeMap = {
         "chs": "zh",
