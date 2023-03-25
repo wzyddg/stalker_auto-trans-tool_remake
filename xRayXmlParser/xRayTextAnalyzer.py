@@ -125,6 +125,7 @@ def getScriptPotentialTexts(text: str) -> set[str]:
     res = set()
 
     lines = text.split("\n")
+    wordPattern = re.compile("["+rusLettersString+"a-zA-Z]")
 
     for line in lines:
         # some pre filter
@@ -158,7 +159,8 @@ def getScriptPotentialTexts(text: str) -> set[str]:
                         # res.add(onGoing)
 
                         # match check
-                        if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(onGoing[1:-1].strip()) > 0:
+                        # if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(onGoing[1:-1].strip()) > 0:
+                        if len(scriptMatchSensitivePtn.findall(onGoing)) == 0 and len(wordPattern.findall(onGoing)) > 0:
                             lineMatchSet.add(onGoing)
 
                     continue
