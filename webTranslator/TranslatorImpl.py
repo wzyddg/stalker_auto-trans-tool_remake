@@ -28,12 +28,26 @@ class GoogleTranslator(WebTranslator):
         self.eachRequestGap = 1
         self.timedOutGap = 1
         self.lastRequest
+        self.safeEncodedLength = 14678
 
     def getApiLangCode(self, textLang: str) -> str:
         return GoogleTranslator.__langCodeMap[textLang]
 
     def resultFilter(self, sourceText: str, resultText: str) -> str:
         return resultText
+
+    def cutSentenceWithLineEnds(self, text: str, lineEnds: list[str] = ["?", ".", "!"]) -> list[str]:
+        lineEndPtn = re.compile("["+"".join(lineEnds)+"]+")
+        seps = lineEndPtn.findall(text)
+        pieces = lineEndPtn.split(text)
+        assert len(pieces) == len(seps) + \
+            1, "separator and pieces count won't match"
+        sentences = []
+        for i in range(len(seps)):
+            sentences.append(pieces[i]+seps[i])
+        if len(sentences) > 0:
+            sentences[-1] = sentences[-1]+pieces[-1]
+        return sentences
 
     def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
         runFL = self.getApiLangCode(fromLang)
@@ -47,11 +61,19 @@ class GoogleTranslator(WebTranslator):
             "sl": runFL,
             "tl": runTL,
             "dt": "t",
-            "dj": "1",
+            # # this is by json object
+            # "dj": "1",
             "ie": "UTF-8",
             "oe": "UTF-8"
         }
         paramsStr = urllib.parse.urlencode(params)
+
+        # add GET length limit for google, last known safe length: 14678, maybe max 16k
+        if len(self.mainTransApi+"?"+paramsStr) > self.safeEncodedLength:
+            sentences = self.cutSentenceWithLineEnds(text)
+            mid = math.floor(len(sentences)/2)
+            return self.doTranslate("".join(sentences[0:mid]), fromLang, toLang)+self.doTranslate("".join(sentences[mid:]), fromLang, toLang)
+
         response = None
         try:
             response = requests.get(self.mainTransApi+"?"+paramsStr)
@@ -64,17 +86,28 @@ class GoogleTranslator(WebTranslator):
                 pass
 
         resJson = json.loads(response.text)
-
         self.lastRequest = timeit.default_timer()
         res = ""
-        if "sentences" in resJson:
-            for sent in resJson["sentences"]:
-                res = res + sent["trans"]
-        else:
+
+        # # this is by json object
+        # if "sentences" in resJson:
+        #     for sent in resJson["sentences"]:
+        #         res = res + sent["trans"]
+        # else:
+        #     # to be found
+        #     print("(can't translate, return original string)")
+        #     print(str(resJson))
+        #     return text
+        try:
+            gglPieces = resJson[0]
+            for gp in gglPieces:
+                res = res+gp[0]
+        except KeyError:
             # to be found
             print("(can't translate, return original string)")
             print(str(resJson))
             return text
+
         return self.resultFilter(text, res)
 
 
