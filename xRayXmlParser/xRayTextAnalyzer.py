@@ -25,7 +25,7 @@ noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 scriptLinePermitPtn = re.compile(
     r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
-    r"(exec|write|parse_names|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
+    r"(exec|write|parse_names|get_sequence_for_npc|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
 scriptContentPatternStringBlackList = [":\d", "load\s+~+"]
 
@@ -81,7 +81,7 @@ def getConfigXmlPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
-    hintptn = re.compile(r'(?:hint|name)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")
+    hintptn = re.compile(r'(?:hint|name|group)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")
     res2 = hintptn.findall(text)
     res3 = []
     for hint in res2:
