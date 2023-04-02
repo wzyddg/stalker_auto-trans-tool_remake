@@ -280,11 +280,11 @@ Options:
                     # every 2 minutes generate a temp file
                     if time() - tempClock > 120:
                         xRayXmlParser.generateOutputXml(
-                            os.path.join(tempDir, xRFile), doneHere)
+                            os.path.join(tempDir, xRFile), doneHere, splitLength=0 if runnableCheck else 1000)
                         tempClock = time()
 
                 xRayXmlParser.generateOutputXml(
-                    os.path.join(doneDir, xRFile), doneHere)
+                    os.path.join(doneDir, xRFile), doneHere, splitLength=0 if runnableCheck else 1000)
                 print("")
 
             elif transFunction == 'cfgxml':
@@ -430,7 +430,7 @@ Options:
 
     if transFunction in ['cfgxml', 'scriptL', 'scriptE', 'ltx']:
         xRayXmlParser.generateOutputXml(os.path.join(
-            doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract)
+            doneDir, "___" + transFunction+"__put_this_to_text_folder.xml"), extract, splitLength=0 if runnableCheck else 1000)
 
     print("\n\nAll done! Congratulations! Now generate localization pack and have fun!")
     print("translated files are located at " + doneDir)

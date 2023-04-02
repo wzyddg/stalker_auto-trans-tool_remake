@@ -2,7 +2,7 @@ from .entityDefinition import *
 from .xRayTextAnalyzer import *
 
 
-def generateOutputXml(filePath: str, texts: Dict[str, str]):
+def generateOutputXml(filePath: str, texts: Dict[str, str], splitLength: int = 1000):
     fileText = '<?xml version="1.0" encoding="utf-8"?>\n<string_table>\n'
     for textId in texts:
         fileText = fileText+'\t<string id="' + \
@@ -12,9 +12,11 @@ def generateOutputXml(filePath: str, texts: Dict[str, str]):
 
         # add break:\n every 1000 char so it can be loaded into game
         # maybe protect placeholder later
-        fileText = fileText+'\t\t<text>' + \
-            '\n'.join(splitTextToPiecesAtLength(
-                escapeXmlContentString(texts[textId]), 1000))+'</text>\n'
+        curContent = escapeXmlContentString(texts[textId])
+        if splitLength > 0:
+            curContent = '\n'.join(
+                splitTextToPiecesAtLength(curContent, splitLength))
+        fileText = fileText+'\t\t<text>' + curContent + '</text>\n'
         fileText = fileText+'\t</string>\n'
     fileText = fileText+'</string_table>\n'
     file = open(filePath, "w", encoding="utf-8")

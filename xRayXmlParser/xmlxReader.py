@@ -21,7 +21,8 @@ def extract_entity_from_root(root: etree._Element) -> List[TextEntity]:
         langDict = dict()
         for lang in entChildren:
             if lang.text is not None and len(lang.text) > 0:
-                langDict[lang.tag] = lang.text
+                curText = re.sub(r'[\n]', '', lang.text)
+                langDict[lang.tag] = curText
         if ent.attrib.get("id") is not None:
             res.append(TextEntity(ent.attrib.get("id"), langDict))
 
