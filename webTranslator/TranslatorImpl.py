@@ -78,8 +78,8 @@ class GoogleTranslator(WebTranslator):
         try:
             response = requests.get(self.mainTransApi+"?"+paramsStr)
         except requests.exceptions.ConnectionError as exc:
-            if exc.args[0].reason.original_error.errno == 10054:
-                print("(10054,retry)")
+            if exc.args[0].reason.original_error.errno in [10054,8]:
+                print("(10054 or 8 socket problem, retry)")
                 sleep(self.timedOutGap)
                 return self.doTranslate(text, fromLang, toLang)
             else:
@@ -175,8 +175,8 @@ class TransmartQQTranslator(WebTranslator):
         response = None
         try:
             response = requests.post(self.mainTransApi, json=body)
-        except requests.exceptions.ConnectionError:
-            print("(aborted, wait " + str(self.timedOutGap) + "s and try again)")
+        except requests.exceptions.ConnectionError as exc:
+            print("(aborted: "+str(exc.args[0].reason.original_error.errno)+", wait " + str(self.timedOutGap) + "s and try again)")
             sleep(self.timedOutGap)
             # maybe set self.clientKey = "" here
             return self.doTranslate(text, fromLang, toLang)
