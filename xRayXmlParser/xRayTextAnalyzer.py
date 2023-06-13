@@ -231,7 +231,7 @@ def normalize_xml_string(xmlStr: str, needFixST: bool = True, deleteHeader: bool
     replaced = re.sub(r'&[\s]+amp;', '&amp;', xmlStr)
     replaced = re.sub(r'&[\s]+lt;', '&lt;', replaced)
     replaced = re.sub(
-        '&(?!ensp;|emsp;|nbsp;|lt;|gt;|amp;|quot;|copy;|reg;|trade;|times;|divide;)', '&amp;', replaced)
+        '&(?!ensp;|emsp;|nbsp;|lt;|gt;|amp;|quot;|apos;|copy;|reg;|trade;|times;|divide;)', '&amp;', replaced)
     replaced = re.sub(r'<!--[\s\S]*?-->', '', replaced)
 
     if deleteHeader:
