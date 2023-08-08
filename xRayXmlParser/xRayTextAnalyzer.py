@@ -81,7 +81,8 @@ def getConfigXmlPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
         r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
-    hintptn = re.compile(r'(?:hint|name|group)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")
+    hintptn = re.compile(
+        r'(?:hint|name|group)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")
     res2 = hintptn.findall(text)
     res3 = []
     for hint in res2:
@@ -115,7 +116,7 @@ def getLtxPotentialTexts(text: str) -> set[str]:
         pieces = line.split("=")
         if len(pieces) < 2:
             continue
-        if "description" in pieces[0] or pieces[0].startswith("inv_name"):
+        if "descr" in pieces[0] or "title" in pieces[0] or pieces[0].startswith("inv_name") or "title" in pieces[0]:
             res.add("=".join(pieces[1:]).strip())
 
     return res
