@@ -25,7 +25,7 @@ noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 scriptLinePermitPtn = re.compile(
     r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
-    r"(exec|write|parse_names|get_sequence_for_npc|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
+    r"(exec|write|parse_names|info_add|get_sequence_for_npc|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
 scriptContentPatternStringBlackList = [":\d", "load\s+~+"]
 
@@ -135,7 +135,6 @@ def getLtxPotentialTexts(text: str) -> set[str]:
             else:
                 res.add(content)
             
-
     return res
 
 
