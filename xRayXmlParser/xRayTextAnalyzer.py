@@ -106,6 +106,9 @@ def splitTextToPiecesAtLength(text: str, pieLen: int) -> list[str]:
 
     return res
 
+# COP style complicated task info:
+# title = {+zat_b101_both_heli_info} "Сигнал", {+zat_b101_one_heli_info -jup_b8_heli_4_searching} "Сигнал", "Сигнал"
+# descr = {+zat_b101_both_heli_info} "Пятиканальный сигнал от неизвестного сталкера", {+zat_b101_one_heli_info -jup_b8_heli_4_searching} "Пятиканальный сигнал от неизвестного сталкера", "Пятиканальный сигнал от неизвестного сталкера"
 
 def getLtxPotentialTexts(text: str) -> set[str]:
     res = set()
@@ -116,8 +119,22 @@ def getLtxPotentialTexts(text: str) -> set[str]:
         pieces = line.split("=")
         if len(pieces) < 2:
             continue
-        if "descr" in pieces[0] or "title" in pieces[0] or pieces[0].startswith("inv_name") or "title" in pieces[0]:
-            res.add("=".join(pieces[1:]).strip())
+        content = "=".join(pieces[1:]).strip()
+        if "description" in pieces[0] or pieces[0].startswith("inv_name"):
+            res.add(content)
+        elif pieces[0].strip() in ["title","descr"]:
+            # engine will just split by ',' , following examples will not display completely
+            # title = {+zat_b101_both_heli_info} "this is what we call stupid,and this is wrong!" , {+zat_b101_one_heli_info -jup_b8_heli_4_searching}sgtat_auto_generate_text_1692190353_2sig , this is what we call stupid
+            # descr = "all is well ,you see?"
+            if '{' in content or ',' in content:
+                sac = re.sub('\{[^}]*\}', '', content)
+                contentPieces = sac.split(",")
+                for cp in contentPieces:
+                    if len(cp.strip())>0:
+                        res.add(cp.strip())
+            else:
+                res.add(content)
+            
 
     return res
 
