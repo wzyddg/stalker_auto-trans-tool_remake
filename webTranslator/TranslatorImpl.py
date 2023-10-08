@@ -25,6 +25,7 @@ class BingTranslator(WebTranslator):
     curHost = None
 
     timedOutGap = 1
+    captchaTimeOut = 10
 
     __langCodeMap = {
         "chs": "zh-Hans",
@@ -120,12 +121,14 @@ class BingTranslator(WebTranslator):
             try:
                 resJson = json.loads(response.text)
                 res = resJson[0]["translations"][0]["text"]
+                sleep(1)
                 return self.resultFilter(text, res)
             except KeyError:
-                # to be found
-                print("(can't translate, return original string)")
-                print(str(resJson))
-                return text
+                print(response.text)
+                if "Captcha" in response.text:
+                    sleep(self.captchaTimeOut)
+                    self.__init__()
+                    return self.doTranslate( text, fromLang, toLang, isRetry= True)
             
         
 
