@@ -109,15 +109,12 @@ class BingTranslator(WebTranslator):
                                      'Content-Type': 'application/x-www-form-urlencoded',
                                      'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47"
                                      })
-        except requests.exceptions.ConnectionError as exc:
-            if exc.args[0].reason.original_error.errno in [10054, 8]:
-                print("(10054 or 8 socket problem, retry)")
-                sleep(self.timedOutGap)
-                return self.doTranslate(text, fromLang, toLang)
-            else:
-                pass
+        except (requests.exceptions.ConnectionError, requests.exceptions.SSLError) as exc:
+            print("(connection or retry problem, retry)")
+            sleep(self.captchaTimeOut)
+            return self.doTranslate(text, fromLang, toLang)
 
-        if len(response.text)>0:
+        if len(response.text) > 0:
             try:
                 resJson = json.loads(response.text)
                 res = resJson[0]["translations"][0]["text"]
@@ -128,9 +125,7 @@ class BingTranslator(WebTranslator):
                 if "Captcha" in response.text:
                     sleep(self.captchaTimeOut)
                     self.__init__()
-                    return self.doTranslate( text, fromLang, toLang, isRetry= True)
-            
-        
+                    return self.doTranslate(text, fromLang, toLang, isRetry=True)
 
 
 class GoogleTranslator(WebTranslator):
