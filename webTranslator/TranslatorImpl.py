@@ -12,12 +12,130 @@ import base64
 import random
 
 
+class BingTranslator(WebTranslator):
+    '''
+    request https://www.bing.com/translator
+    find definition of params_AbusePreventionHelper and _G
+    then find IG, IID, token, key
+    '''
+
+    abusePreventionHelper = None
+    IG_param = None
+    initTime = None
+    curHost = None
+
+    timedOutGap = 1
+
+    __langCodeMap = {
+        "chs": "zh-Hans",
+        "eng": "en",
+        "auto": "auto-detect",
+        "rus": "ru"
+    }
+
+    def __init__(self):
+        super().__init__()
+        self.initTime = timeit.default_timer()
+        print("Init Bing Engine, get key and IG.")
+        try:
+            response = requests.get("https://www.bing.com/translator")
+            lines = response.text.split("\n")
+            for line in lines:
+                normLine = re.sub(r'\s*=\s*', '=', line).strip()
+
+                abusePtn = re.compile(
+                    r"var params_AbusePreventionHelper=([^;]+);")
+                pars = abusePtn.findall(normLine)
+                if (len(pars) > 0):
+                    self.abusePreventionHelper = json.loads(pars[0])
+                    continue
+
+                _GPtn = re.compile(r"_G=([^;]+);")
+                _gs = _GPtn.findall(normLine)
+                if (len(_gs) > 0):
+                    IGPtn = re.compile(r'IG:"([^"]+)"')
+                    try:
+                        self.IG_param = IGPtn.findall(_gs[0])[0]
+                    except KeyError:
+                        pass
+
+                # curUrl="https:\/\/cn.bing.com\/translator";
+                # hostPtn= re.compile(r'curUrl="([^"]+)"')
+                hostPtn = re.compile(r'curUrl="([^"]+)"')
+                hosts = hostPtn.findall(normLine)
+                if (len(hosts) > 0):
+                    url = hosts[0]
+                    url = re.sub(r'/translator/?|\\', '', url).strip()
+                    self.curHost = url
+
+        except KeyError:
+            pass
+
+    def getApiLangCode(self, textLang: str) -> str:
+        return BingTranslator.__langCodeMap[textLang]
+
+    def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
+        if fromLang == self.autoLangCode:
+            fromLang = self.detectLang(text)
+        runFL = self.getApiLangCode(fromLang)
+        runTL = self.getApiLangCode(toLang)
+
+        gap = timeit.default_timer()-self.initTime
+        if gap > self.abusePreventionHelper[2]/1000-1:
+            self.__init__()
+        transApi = self.curHost+"/ttranslatev3?isVertical=1&&IG=" + \
+            self.IG_param+"&IID=translator.5027"
+
+        # safe for http form, maybe useless, but why not
+        if len(text) > 1000:
+            sentences = self.cutSentenceWithLineEnds(text)
+            mid = math.floor(len(sentences)/2)
+            return self.doTranslate("".join(sentences[0:mid]), fromLang, toLang)+self.doTranslate("".join(sentences[mid:]), fromLang, toLang)
+
+        form = {
+            "fromLang": runFL,
+            "to": runTL,
+            "text": text,
+            "token": self.abusePreventionHelper[1],
+            "key": self.abusePreventionHelper[0],
+            "tryFetchingGenderDebiasedTranslations": "true"
+        }
+        paramsStr = "&"+urllib.parse.urlencode(form)
+
+        response = None
+        try:
+            response = requests.post(transApi, data=paramsStr, headers={
+                                     'Content-Type': 'application/x-www-form-urlencoded',
+                                     'user-agent': "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36 Edg/117.0.2045.47"
+                                     })
+        except requests.exceptions.ConnectionError as exc:
+            if exc.args[0].reason.original_error.errno in [10054, 8]:
+                print("(10054 or 8 socket problem, retry)")
+                sleep(self.timedOutGap)
+                return self.doTranslate(text, fromLang, toLang)
+            else:
+                pass
+
+        if len(response.text)>0:
+            try:
+                resJson = json.loads(response.text)
+                res = resJson[0]["translations"][0]["text"]
+                return self.resultFilter(text, res)
+            except KeyError:
+                # to be found
+                print("(can't translate, return original string)")
+                print(str(resJson))
+                return text
+            
+        
+
+
 class GoogleTranslator(WebTranslator):
 
     __langCodeMap = {
         "chs": "zh-CN",
         "eng": "en",
-        "ezauto": "auto",
+        "auto": "auto",
         "rus": "ru",
         "ukr": "uk"
     }
@@ -50,6 +168,8 @@ class GoogleTranslator(WebTranslator):
         return sentences
 
     def doTranslate(self, text: str, fromLang: str, toLang: str, isRetry: bool = False) -> str:
+        if fromLang == self.autoLangCode:
+            fromLang = self.detectLang(text)
         runFL = self.getApiLangCode(fromLang)
         runTL = self.getApiLangCode(toLang)
 
@@ -78,7 +198,7 @@ class GoogleTranslator(WebTranslator):
         try:
             response = requests.get(self.mainTransApi+"?"+paramsStr)
         except requests.exceptions.ConnectionError as exc:
-            if exc.args[0].reason.original_error.errno in [10054,8]:
+            if exc.args[0].reason.original_error.errno in [10054, 8]:
                 print("(10054 or 8 socket problem, retry)")
                 sleep(self.timedOutGap)
                 return self.doTranslate(text, fromLang, toLang)
@@ -176,7 +296,8 @@ class TransmartQQTranslator(WebTranslator):
         try:
             response = requests.post(self.mainTransApi, json=body)
         except requests.exceptions.ConnectionError as exc:
-            print("(aborted: "+str(exc.args[0].reason.original_error.errno)+", wait " + str(self.timedOutGap) + "s and try again)")
+            print("(aborted: "+str(exc.args[0].reason.original_error.errno) +
+                  ", wait " + str(self.timedOutGap) + "s and try again)")
             sleep(self.timedOutGap)
             # maybe set self.clientKey = "" here
             return self.doTranslate(text, fromLang, toLang)

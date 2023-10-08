@@ -56,7 +56,7 @@ by wzyddg(FB) from baidu S.T.A.L.K.E.R. tieba
 
 Options:
   -e <value>|--engine=<value>               use what translate engine.
-                                                eg: baidu qq google
+                                                eg: baidu qq google bing
   -p <value>|--path=<value>                 path of the folder containing what you want to translate.
                                                 always quote with ""
   -t <value>|--toLang=<value>               translate to what language.
@@ -143,8 +143,10 @@ Options:
             return webTranslator.GoogleTranslator()
         elif e == 'baidu':
             return webTranslator.BaiduTranslator(appId, appKey)
-        elif e == 'deepl':
-            return webTranslator.DeepLTranslator()
+        # elif e == 'deepl':
+        #     return webTranslator.DeepLTranslator()
+        elif e == 'bing':
+            return webTranslator.BingTranslator()
 
     def getBenchPlayerTrans(e) -> webTranslator.WebTranslator:
         if e == 'qq':

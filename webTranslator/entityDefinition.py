@@ -26,8 +26,24 @@ class WebTranslator(ABC):
             return "rus"
         else:
             return "eng"
+        
+    def resultFilter(self, sourceText: str, resultText: str) -> str:
+        return resultText
 
     def __init__(self):
         self.timedOutGap = 10
         self.eachRequestGap = 1
         self.lastRequest = 0
+
+    def cutSentenceWithLineEnds(self, text: str, lineEnds: list[str] = ["?", ".", "!"]) -> list[str]:
+        lineEndPtn = re.compile("["+"".join(lineEnds)+"]+")
+        seps = lineEndPtn.findall(text)
+        pieces = lineEndPtn.split(text)
+        assert len(pieces) == len(seps) + \
+            1, "separator and pieces count won't match"
+        sentences = []
+        for i in range(len(seps)):
+            sentences.append(pieces[i]+seps[i])
+        if len(sentences) > 0:
+            sentences[-1] = sentences[-1]+pieces[-1]
+        return sentences
