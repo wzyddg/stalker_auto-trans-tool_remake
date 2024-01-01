@@ -242,7 +242,7 @@ Options:
             transedWholeText = transedWholeText + piece["translated"]
         return transedWholeText
 
-    textIdPrefix = "sgtat_auto_generate_text_"+str(int(time()))+"_"
+    textIdPrefix = "sgtat_gen_text_"+str(int(time()))+"_"
     totalGenerateCount = 0
     extract = {}
 

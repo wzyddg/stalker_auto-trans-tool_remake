@@ -25,7 +25,7 @@ noLettersPattern = re.compile("[^a-zA-Z"+rusLettersString+"]*")
 scriptLinePermitPtn = re.compile(
     r"([Mm]essage|[Tt]ext(?!ure)|(?<![a-z])[Nn]ews(?![a-z]))")
 scriptLineSensitivePtn = re.compile(
-    r"(exec|write|parse_names|info_add|get_sequence_for_npc|load|(?<!de)script(?!ion)|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
+    r"(exec|write|parse_names|info_add|get_sequence_for_npc|load|call|set(?![Tt]ext)|open|sound|effect|abort|print|console|cmd|return)")
 scriptMatchSensitivePtn = re.compile(r'("[\s]*return)')
 scriptContentPatternStringBlackList = [":\d", "load\s+~+"]
 
@@ -79,7 +79,7 @@ def avoid_error_normalizer(text: str) -> str:
 
 def getConfigXmlPotentialTexts(text: str) -> set[str]:
     gpptn = re.compile(
-        r"<(?:text|bio|title|name)(?:| [ \S]*?[^/]) *?>([^<>]*?)</(?:text|bio|title|name)>")
+        r"<(?:text|bio|title|name)(?:\s*|[^/>])*?\s*>([^<>]*?)</(?:text|bio|title|name)>")
     res = gpptn.findall(text)
     hintptn = re.compile(
         r'(?:hint|name|group)\s*=\s*((?:"[^"]*")|'+r"(?:'[^']*'))")

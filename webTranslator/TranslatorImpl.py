@@ -39,7 +39,11 @@ class BingTranslator(WebTranslator):
         self.initTime = timeit.default_timer()
         print("Init Bing Engine, get key and IG.")
         try:
-            response = requests.get("https://www.bing.com/translator")
+            # for world wide
+            # response = requests.get("https://www.bing.com/translator")
+
+            # this works better in China
+            response = requests.get("https://cn.bing.com/translator")
             lines = response.text.split("\n")
             for line in lines:
                 normLine = re.sub(r'\s*=\s*', '=', line).strip()
